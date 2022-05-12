@@ -24,21 +24,28 @@ const fakeUser: User = {
     cardNumber: '0000000000000000',
     accountNumber: '123456789',
     routingNumber: '123456789',
-  }
+  },
 };
 
 export interface DefaultProps {
-  user: User
+  user: User;
 }
+const tst = 2;
 
 const App: FC<AppProps> = () => {
   return (
     <BrowserRouter basename={'/'}>
       <Routes>
         <Route path='/' element={<Dashboard user={fakeUser} />}>
-          <Route path='account/activity' element={<Activity user={fakeUser} />} />
+          <Route
+            path='account/activity'
+            element={<Activity user={fakeUser} />}
+          />
           <Route path='account/mycash' element={<MyCash user={fakeUser} />} />
-          <Route path='account/settings' element={<Settings user={fakeUser} />} />
+          <Route
+            path='account/settings'
+            element={<Settings user={fakeUser} />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

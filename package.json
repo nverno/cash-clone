@@ -31,7 +31,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && cd frontend && npx lint-staged"
     }
   },
   "lint-staged": {

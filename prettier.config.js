@@ -1,7 +1,7 @@
 /** @type {import('./types').PrettierConfig} */
 module.exports = {
-  printWidth: 100,
-  semi: false,
+  printWidth: 80,
+  semi: true,
   singleQuote: true,
   jsxSingleQuote: true,
-}
+};

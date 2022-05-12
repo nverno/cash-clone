@@ -15,10 +15,13 @@ const requiresTypeRulesOff = Object.fromEntries(
 module.exports = {
   root: true,
   extends: [
-    'standard', 'standard-react', 'plugin:@typescript-eslint/recommended',
-    'standard-with-typescript', 'prettier'
+    'standard',
+    'standard-react',
+    'plugin:@typescript-eslint/recommended',
+    'standard-with-typescript',
+    'prettier',
   ],
-  
+
   env: {
     browser: true,
     es2021: true,
@@ -55,8 +58,8 @@ module.exports = {
       files: ['*.js'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
-      }
+        // '@typescript-eslint/no-unused-vars': 'off',
+      },
     },
     {
       files: ['*.ts', '*.tsx'],
@@ -71,7 +74,6 @@ module.exports = {
         '@typescript-eslint/no-dynamic-delete': 'off',
         '@typescript-eslint/no-extraneous-class': 'off',
         '@typescript-eslint/no-invalid-void-type': 'off',
-        '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/triple-slash-reference': 'off',
 
         'import/export': 'off',
