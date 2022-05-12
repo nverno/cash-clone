@@ -1,0 +1,7 @@
+.sider {
+  :global {
+    .ant-menu {
+      background: none !important;
+    }
+  }
+}
