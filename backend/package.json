@@ -9,12 +9,11 @@
     "url": "https://github.com/nverno/cash-clone.git"
   },
   "scripts": {
-    "start": "npm run build && cross-env NODE_ENV=production node dist/server.js",
-    "check": "npm run build && npm run lint:fix",
+    "start": "cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
     "dev:rebuild": "docker-compose down --volumes && docker-compose up --build -d && npm run prisma:generate && npm run prisma:migrate && npm run seed && docker-compose up server",
-    "build": "swc src -d dist --source-maps --copy-files",
-    "build:tsc": "tsc && tsc-alias",
+    "build": "tsc && tsc-alias",
+    "build:swc": "swc src -d dist --source-maps --copy-files",
     "test": "jest --forceExit --detectOpenHandles",
     "prisma:init": "prisma init",
     "prisma:migrate": "prisma migrate dev --preview-feature",

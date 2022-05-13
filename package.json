@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "npm install --legacy-peer-deps",
+    "heroku-prebuild": "npm install --dev --legacy-peer-deps",
     "prepare": "husky install",
     "lint": "eslint --ignore-path .gitignore --ext '.js,.ts,.tsx' .",
     "lint:fix": "npm run lint -- --fix"

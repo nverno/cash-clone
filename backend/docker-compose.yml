@@ -12,6 +12,7 @@ services:
     networks:
       - backend
   server:
+    image: registry.heroku.com/caashapp/caashapp-service:latest
     build:
       context: ./
       target: development-build-stage

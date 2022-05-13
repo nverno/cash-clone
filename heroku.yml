@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: ./backend/Dockerfile
+run:
+  web: node "./dist/server.js"

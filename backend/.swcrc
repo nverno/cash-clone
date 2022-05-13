@@ -21,16 +21,16 @@
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"],
-      "@config": ["config"],
-      "@controllers": ["controllers/."],
-      "@dtos": ["dtos/."],
-      "@exceptions": ["exceptions/."],
-      "@interfaces": ["interfaces/."],
-      "@middlewares": ["middlewares/."],
-      "@routes": ["routes/."],
-      "@services": ["services/."],
-      "@utils": ["utils/."],
-      "@types": ["types/."]
+      "@config": ["./config/"],
+      "@controllers": ["./controllers/"],
+      "@dtos": ["./dtos/"],
+      "@exceptions": ["./exceptions/"],
+      "@interfaces": ["./interfaces/"],
+      "@middlewares": ["./middlewares/"],
+      "@routes": ["./routes/"],
+      "@services": ["./services/"],
+      "@utils": ["./utils/"],
+      "@types": ["./types/"]
     }
   },
   "module": {

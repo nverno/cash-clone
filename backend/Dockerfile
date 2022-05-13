@@ -1,11 +1,11 @@
 # Common build stage
-FROM node:17-alpine as common-build-stage
+FROM node:17-alpine3.14 as common-build-stage
 
 COPY . ./app
 
 WORKDIR /app
 
-RUN npm install -g npm@8.10.0 && npm install
+RUN npm install -g npm@8.10.0 && npm install && npm run build
 
 EXPOSE 5005
 
