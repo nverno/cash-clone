@@ -31,13 +31,13 @@ model User {
 model PhoneNumber {
   phoneNumber String  @unique
   user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId      String? @db.Uuid
+  userId      String?
 }
 
 model Email {
   email  String  @unique
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String? @db.Uuid
+  userId String?
 }
 
 model MailingAddress {
@@ -48,7 +48,7 @@ model MailingAddress {
   zip     String
   unit    String?
   user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId  String? @db.Uuid
+  userId  String?
 }
 
 enum PrivacySetting {
@@ -59,7 +59,7 @@ enum PrivacySetting {
 
 model Settings {
   id       Int            @id @default(autoincrement())
-  userId   String?        @unique @db.Uuid
+  userId   String?        @unique
   user     User?          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   allowPay Boolean        @default(true)
   privacy  PrivacySetting @default(all)
@@ -67,10 +67,11 @@ model Settings {
 
 model Card {
   id            Int      @id @default(autoincrement())
+  // XXX: unique
   cardNumber    String
   cardActivated Boolean? @default(false)
   user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String?  @unique @db.Uuid
+  userId        String?  @unique
 }
 
 model BankAccount {
@@ -79,5 +80,5 @@ model BankAccount {
   accountNumber String
   routingNumber String
   user          User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String? @db.Uuid
+  userId        String?
 }

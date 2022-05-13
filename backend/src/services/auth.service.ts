@@ -24,7 +24,7 @@ export class AuthService {
 
     const user: User = await this.userService.findUser({ email, phoneNumber });
     const isPasswordMatching: boolean = await compare(password, user.password);
-    if (!isPasswordMatching) throw new HttpException(409, 'Invalid password');
+    if (!isPasswordMatching) throw new HttpException(400, 'Invalid password');
 
     const tokenData = this.createToken(user);
     const cookie = this.createCookie(tokenData);
@@ -36,7 +36,7 @@ export class AuthService {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing logout data');
 
     const user: User = await this.userService.findUser(userData);
-    if (!user) throw new HttpException(409, 'User data not found');
+    if (!user) throw new HttpException(400, 'User data not found');
 
     return user;
   }

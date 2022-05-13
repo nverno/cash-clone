@@ -13,23 +13,27 @@ export class UserService {
 
   public async checkNewEmail({ email }: Partial<CreateUserDto>): Promise<void> {
     if (!email) return;
-    const res = await this.emails.findUnique({ where: { email } });
-    if (res) {
-      throw new HttpException(409, `You're email ${email} already exists`);
-    }
+    try {
+      const res = await this.emails.findUnique({ where: { email } });
+      if (res) {
+        throw new HttpException(409, `You're email ${email} already exists`);
+      }
+    } catch {}
   }
 
   public async checkNewPhone({
     phoneNumber,
   }: Partial<CreateUserDto>): Promise<void> {
     if (!phoneNumber) return;
-    const res = await this.phones.findUnique({ where: { phoneNumber } });
-    if (res) {
-      throw new HttpException(
-        409,
-        `You're phone number ${phoneNumber} already exists`,
-      );
-    }
+    try {
+      const res = await this.phones.findUnique({ where: { phoneNumber } });
+      if (res) {
+        throw new HttpException(
+          409,
+          `You're phone number ${phoneNumber} already exists`,
+        );
+      }
+    } catch {}
   }
 
   public async checkNewUserData(data: CreateUserDto): Promise<void> {
@@ -85,11 +89,11 @@ export class UserService {
     } catch {
       throw new HttpException(
         409,
-        `An account with this email or phone number already exists`,
+        'An account with this email or phone number already exists',
       );
     }
-    const { email, phoneNumber, password, ...data } = userData;
 
+    const { email, phoneNumber, password, ...data } = userData;
     const hashedPassword = await hash(password, 10);
     return this.users.create({
       data: {

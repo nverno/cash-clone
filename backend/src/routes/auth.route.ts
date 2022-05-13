@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '@controllers';
-import { CreateUserDto } from '@dtos';
+import { CreateUserDto, LoginUserDto } from '@dtos';
 import { Routes } from '@interfaces';
 import { authMiddleware, validationMiddleware } from '@middlewares';
 
@@ -21,7 +21,7 @@ export class AuthRoute implements Routes {
     );
     this.router.post(
       `${this.path}login`,
-      validationMiddleware(CreateUserDto, 'body'),
+      validationMiddleware(LoginUserDto, 'body'),
       this.authController.logIn,
     );
     this.router.post(

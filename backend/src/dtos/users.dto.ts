@@ -28,7 +28,7 @@ export class CreateUserDto {
   public username?: string;
 
   @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumber('US')
   public phoneNumber?: string;
 }
 
