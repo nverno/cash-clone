@@ -67,5 +67,8 @@
     "typescript": "^4.6.4",
     "vite": "^2.9.9",
     "vite-dts": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=17"
   }
 }

@@ -7,8 +7,8 @@ const typescriptEslint = require('@typescript-eslint/eslint-plugin');
  */
 const requiresTypeRulesOff = Object.fromEntries(
   Object.entries(typescriptEslint.rules)
-    .filter(([name, rule]) => rule.meta.docs.requiresTypeChecking)
-    .map(([name]) => [`@typescript-eslint/${name}`, 'off'])
+    .filter(([_name, rule]) => rule.meta.docs.requiresTypeChecking)
+    .map(([name]) => [`@typescript-eslint/${name}`, 'off']),
 );
 
 /** @type {import('./types').ESLintConfig} */

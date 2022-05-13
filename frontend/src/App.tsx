@@ -2,7 +2,7 @@
 import React, { FC } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { Provider } from 'react-redux'; // eslint-disable-line
 import '../styles/globals.css';
 import { Activity, Dashboard, MyCash, Settings } from './components';
 import { User } from './store';
@@ -30,7 +30,6 @@ const fakeUser: User = {
 export interface DefaultProps {
   user: User;
 }
-const tst = 2;
 
 const App: FC<AppProps> = () => {
   return (

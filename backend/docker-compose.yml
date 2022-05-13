@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  proxy:
+    image: nginx:alpine
+    container_name: cashapp-proxy
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    restart: 'unless-stopped'
+    networks:
+      - backend
+  server:
+    build:
+      context: ./
+      target: development-build-stage
+      dockerfile: Dockerfile
+    container_name: cashapp-server
+    ports:
+      # 5005 on host since frontend runs on 3000
+      - '5005:5005'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    links:
+      - db
+    depends_on:
+      - db
+  db:
+    container_name: cashapp-db
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    networks:
+      - backend
+    ports:
+      # NOTE: not default on host!! only b/c conflicts w/ other running postgres
+      - '5434:5432'
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local

@@ -1,0 +1,15 @@
+{
+  "watch": [
+    "src",
+    ".env",
+    "nodemon.json",
+    "swagger.yaml",
+    "tsconfig.json"
+  ],
+  "ext": "js,ts,json,yaml",
+  "ignore": [
+    "src/logs/*",
+    "src/**/*.{spec,test}.ts"
+  ],
+  "exec": "ts-node -r tsconfig-paths/register --transpile-only src/server.ts"
+}
