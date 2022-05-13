@@ -11,7 +11,24 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+  id          String        @id @db.Uuid()
+  email       String        @unique
+  password    String
+  firstName   String
+  lastName    String
+  username    String?
+  cashTag     String        @unique
+  phoneNumber String?
+  cardNumber  String
+  balance     Float         @default(0)
+  accounts    BankAccount[]
+}
+
+model BankAccount {
+  id            Int    @id @default(autoincrement())
+  name          String
+  accountNumber String
+  routingNumber String
+  User          User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String
 }

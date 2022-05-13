@@ -1,11 +1,14 @@
-import { Account } from "./Account";
+import { BankAccount } from './BankAccount';
 
 export interface User {
-  firstName: string,
-  lastName: string,
-  username?: string,
-  cashTag: string,
-  email: string,
-  phoneNumber: string,
-  account: Account
+  id?: string;
+  firstName: string;
+  lastName: string;
+  username?: string;
+  cashTag: string;
+  email: string;
+  phoneNumber: string;
+  balance: number;
+  cardNumber: string;
+  accounts: BankAccount[];
 }
