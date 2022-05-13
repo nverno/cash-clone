@@ -20,8 +20,10 @@ const fakeUser: User = {
   phoneNumber: '1234567890',
   email: 'fake.user@gggmail.com',
   balance: 0,
-  cardNumber: '0000000000000000',
-  cardActivated: false,
+  card: {
+    cardNumber: '0000000000000000',
+    cardActivated: false,
+  },
   accounts: [
     {
       name: 'Bank of America',

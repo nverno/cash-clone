@@ -8,7 +8,7 @@ export interface MyCardProps extends DefaultProps {}
 const MyCard: FC<MyCardProps> = (props) => {
   const { user } = props;
   const [showMenu, setShowMenu] = React.useState(false);
-
+  if (!user) return null;
   return (
     <div
       className='card-likeness-section'
@@ -26,7 +26,7 @@ const MyCard: FC<MyCardProps> = (props) => {
               <div className='card-number-section'>••••</div>
               <div className='card-number-section'>••••</div>
               <div className='card-number-section'>
-                {formatCreditCard(user)}
+                {formatCreditCard(user.card)}
               </div>
             </div>
           </div>

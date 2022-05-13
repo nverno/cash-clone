@@ -11,35 +11,73 @@ generator client {
 }
 
 model User {
-  id          String        @id @db.Uuid()
-  createdAt DateTime @default(now())
-  email       String        @unique
+  id          String           @id @default(uuid())
+  createdAt   DateTime         @default(now())
+  cashTag     String           @unique
+  email       Email[]
   password    String
   firstName   String
   lastName    String
   username    String?
   pinNumber   String
-  cashTag     String        @unique
-  phoneNumber String?
-  card        Card          @relation(fields: [cardId], references: [id])
-  balance     Float         @default(0)
+  phoneNumber PhoneNumber[]
+  card        Card?
+  balance     Float            @default(0)
   accounts    BankAccount[]
-  cardId      Int
+  settings    Settings?
+  addresses   MailingAddress[]
+}
+
+model PhoneNumber {
+  phoneNumber String  @unique
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String? @db.Uuid
+}
+
+model Email {
+  email  String  @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String? @db.Uuid
+}
+
+model MailingAddress {
+  id      Int     @id @default(autoincrement())
+  address String
+  city    String
+  state   String
+  zip     String
+  unit    String?
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId  String? @db.Uuid
+}
+
+enum PrivacySetting {
+  all
+  none
+  contacts
+}
+
+model Settings {
+  id       Int            @id @default(autoincrement())
+  userId   String?        @unique @db.Uuid
+  user     User?          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  allowPay Boolean        @default(true)
+  privacy  PrivacySetting @default(all)
 }
 
 model Card {
   id            Int      @id @default(autoincrement())
   cardNumber    String
   cardActivated Boolean? @default(false)
-  User          User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String?  @unique @db.Uuid
 }
 
 model BankAccount {
-  id            Int    @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   name          String
   accountNumber String
   routingNumber String
-  User          User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId        String
+  user          User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String? @db.Uuid
 }

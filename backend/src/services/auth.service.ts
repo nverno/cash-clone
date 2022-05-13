@@ -1,69 +1,44 @@
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 import { SECRET_KEY } from '@config';
-import { CreateUserDto } from '@dtos';
+import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
 import { DataStoredInToken, TokenData } from '@interfaces';
 import { isEmpty } from '@utils';
-import prisma from '@/client';
+import UserService from './users.service';
 
 export class AuthService {
-  public users = prisma.user;
+  public userService = new UserService();
 
   public async signup(userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
-
-    const findUser: User = await this.users.findUnique({
-      where: { email: userData.email },
-    });
-    if (findUser)
-      throw new HttpException(
-        409,
-        `You're email ${userData.email} already exists`,
-      );
-
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: Promise<User> = this.users.create({
-      data: { ...userData, password: hashedPassword },
-    });
-
-    return createUserData;
+    return this.userService.createUser(userData);
   }
 
+  /** Users can login by email or phone number */
   public async login(
-    userData: CreateUserDto,
-  ): Promise<{ cookie: string; findUser: User }> {
-    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
+    userData: LoginUserDto,
+  ): Promise<{ cookie: string; user: User }> {
+    if (isEmpty(userData)) throw new HttpException(400, 'Missing login data');
+    const { email, phoneNumber, password } = userData;
 
-    const findUser: User = await this.users.findUnique({
-      where: { email: userData.email },
-    });
-    if (!findUser)
-      throw new HttpException(409, `You're email ${userData.email} not found`);
+    const user: User = await this.userService.findUser({ email, phoneNumber });
+    const isPasswordMatching: boolean = await compare(password, user.password);
+    if (!isPasswordMatching) throw new HttpException(409, 'Invalid password');
 
-    const isPasswordMatching: boolean = await compare(
-      userData.password,
-      findUser.password,
-    );
-    if (!isPasswordMatching)
-      throw new HttpException(409, "You're password not matching");
-
-    const tokenData = this.createToken(findUser);
+    const tokenData = this.createToken(user);
     const cookie = this.createCookie(tokenData);
 
-    return { cookie, findUser };
+    return { cookie, user };
   }
 
   public async logout(userData: User): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
+    if (isEmpty(userData)) throw new HttpException(400, 'Missing logout data');
 
-    const findUser: User = await this.users.findFirst({
-      where: { email: userData.email, password: userData.password },
-    });
-    if (!findUser) throw new HttpException(409, "You're not user");
+    const user: User = await this.userService.findUser(userData);
+    if (!user) throw new HttpException(409, 'User data not found');
 
-    return findUser;
+    return user;
   }
 
   public createToken(user: User): TokenData {

@@ -1,5 +1,5 @@
 import { capitalize } from 'lodash-es';
-import { User, BankAccount } from '../store';
+import { User, BankAccount, Card } from '../store';
 
 export const formatName = (user: User) => {
   return `${capitalize(user.firstName)} ${capitalize(user.lastName)}`;
@@ -23,8 +23,8 @@ export const formatInitial = (user: User) => {
   return user.firstName[0].toLocaleUpperCase();
 };
 
-export const formatCreditCard = (user: User) => {
-  return user.cardNumber.slice(12);
+export const formatCreditCard = (card: Card) => {
+  return card.cardNumber.slice(12);
 };
 
 export const formatRoutingNumber = (account: BankAccount) => {

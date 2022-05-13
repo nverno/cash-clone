@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '@prisma/client';
-import { CreateUserDto } from '@dtos';
+import { CreateUserDto, LoginUserDto } from '@dtos';
 import { RequestWithUser } from '@interfaces';
 import { AuthService } from '@services';
 import { catchAsync } from '@utils';
@@ -18,10 +18,10 @@ export class AuthController {
 
   public logIn = catchAsync(
     async (req: Request, res: Response): Promise<void> => {
-      const userData: CreateUserDto = req.body;
-      const { cookie, findUser } = await this.authService.login(userData);
+      const userData: LoginUserDto = req.body;
+      const { cookie, user } = await this.authService.login(userData);
       res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json(findUser);
+      res.status(200).json(user);
     },
   );
 

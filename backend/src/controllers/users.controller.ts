@@ -15,7 +15,7 @@ export class UsersController {
 
   public getUserById = catchAsync(
     async (req: Request, res: Response): Promise<void> => {
-      const userId = Number(req.params.id);
+      const userId = String(req.params.id);
       const user: User = await this.userService.findUserById(userId);
       res.status(200).json(user);
     },
@@ -31,7 +31,7 @@ export class UsersController {
 
   public updateUser = catchAsync(
     async (req: Request, res: Response): Promise<void> => {
-      const userId = Number(req.params.id);
+      const userId = String(req.params.id);
       const userData: CreateUserDto = req.body;
       const updateUserData: User = await this.userService.updateUser(
         userId,
@@ -43,7 +43,7 @@ export class UsersController {
 
   public deleteUser = catchAsync(
     async (req: Request, res: Response): Promise<void> => {
-      const userId = Number(req.params.id);
+      const userId = String(req.params.id);
       const deleteUserData: User = await this.userService.deleteUser(userId);
       res.status(200).json(deleteUserData);
     },
