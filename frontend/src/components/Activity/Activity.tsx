@@ -4,12 +4,10 @@ import ActivityHeader from './ActivityHeader';
 
 export interface ActivityProps extends DefaultProps {}
 
-export const Activity: FC<ActivityProps> = props => {
-
+export const Activity: FC<ActivityProps> = (props) => {
   return (
-    <section className="activity-history">
+    <section className='activity-history'>
       <ActivityHeader {...props} />
-
     </section>
   );
 };

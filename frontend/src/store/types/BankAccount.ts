@@ -1,7 +1,7 @@
 export interface BankAccount {
   id?: number;
   name: string;
-  userId: string;
+  userId?: string;
   accountNumber: string;
   routingNumber: string;
 }

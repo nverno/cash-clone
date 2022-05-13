@@ -5,10 +5,12 @@ export interface User {
   firstName: string;
   lastName: string;
   username?: string;
+  pinNumber?: string;
   cashTag: string;
   email: string;
   phoneNumber: string;
   balance: number;
   cardNumber: string;
-  accounts: BankAccount[];
+  cardActivated?: boolean;
+  accounts?: BankAccount[];
 }

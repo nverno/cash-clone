@@ -19,12 +19,16 @@ const fakeUser: User = {
   cashTag: '$FakeUser',
   phoneNumber: '1234567890',
   email: 'fake.user@gggmail.com',
-  account: {
-    balance: 0,
-    cardNumber: '0000000000000000',
-    accountNumber: '123456789',
-    routingNumber: '123456789',
-  },
+  balance: 0,
+  cardNumber: '0000000000000000',
+  cardActivated: false,
+  accounts: [
+    {
+      name: 'Bank of America',
+      accountNumber: '12345678',
+      routingNumber: '123456789',
+    },
+  ],
 };
 
 export interface DefaultProps {

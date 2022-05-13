@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 /**
  * Hook to bind outside click listener for ref
@@ -13,11 +13,11 @@ export const useOutsideClick = (ref, handleFinished) => {
   useEffect(() => {
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [ref]);
 
   // Bind function to bind the event listener
-  return () => document.addEventListener("mousedown", handleClickOutside)
-}
-export default useOutsideClick
+  return () => document.addEventListener('mousedown', handleClickOutside);
+};
+export default useOutsideClick;

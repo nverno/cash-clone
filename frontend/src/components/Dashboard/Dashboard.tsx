@@ -5,12 +5,12 @@ import { DefaultProps } from '../../App';
 
 export interface DashboardProps extends DefaultProps {}
 
-export const Dashboard: FC<DashboardProps> = props => {
+export const Dashboard: FC<DashboardProps> = (props) => {
   return (
-    <div className="account-new">
-      <div className="layout-account-new flex-container">
+    <div className='account-new'>
+      <div className='layout-account-new flex-container'>
         <Sidebar {...props} />
-        <section className="yield-content flex-fill flex-v">
+        <section className='yield-content flex-fill flex-v'>
           <Outlet />
         </section>
       </div>
