@@ -4,3 +4,4 @@ export * from './Settings';
 export * from './Activity';
 export * from './BankAccount';
 export * from './Login';
+export * from './Landing';

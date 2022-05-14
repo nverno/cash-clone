@@ -10,7 +10,7 @@ export const Dashboard: FC<DashboardProps> = (props) => {
     <div className='account-new'>
       <div className='layout-account-new flex-container'>
         <Sidebar {...props} />
-        <section className='yield-content flex-fill flex-v'>
+        <section className='yield-content flex-fill flex-v theme-bg theme-light-gray'>
           <Outlet />
         </section>
       </div>

@@ -1,10 +1,16 @@
 // eslint-disable-next-line no-use-before-define
 import React, { FC } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux'; // eslint-disable-line
 import '../styles/globals.css';
-import { Activity, Dashboard, MyCash, Settings } from './components';
+import {
+  Activity,
+  Dashboard,
+  LandingPage,
+  MyCash,
+  Settings,
+} from './components';
 import { User } from './store';
 import LoginPage from './components/Login/LoginPage';
 
@@ -43,23 +49,56 @@ export interface DefaultProps {
 }
 
 const App: FC<AppProps> = () => {
+  const loggedIn = false;
+
+  const displayLoggedOut = () => (
+    <Routes>
+      <Route path='/' element={<LandingPage />} />
+      <Route path='/login' element={<LoginPage />} />
+      <Route
+        path='*'
+        element={
+          <Navigate
+            replace
+            to={`/login?redirect-to=${window.location.pathname}`}
+          />
+        }
+      />
+    </Routes>
+  );
+
+  const displayLoggedIn = () => (
+    <Routes>
+      <Route path='/account' element={<Dashboard user={fakeUser} />}>
+        <Route path='activity' element={<Activity user={fakeUser} />} />
+        <Route path='mycash' element={<MyCash user={fakeUser} />} />
+        <Route path='settings' element={<Settings user={fakeUser} />} />
+      </Route>
+
+      <Route path='*' element={<Navigate replace to='/account/activity' />} />
+    </Routes>
+  );
+
   return (
     <BrowserRouter basename={'/'}>
-      <Routes>
-        <Route path='/' element={<Dashboard user={fakeUser} />}>
+      {/* {displayLoggedIn()} */}
+      {loggedIn ? displayLoggedIn() : displayLoggedOut()}
+      {/* <Routes>
+          <Route path='/' element={<LandingPage />} />
+          <Route path='/account' element={<Dashboard user={fakeUser} />}>
           <Route
-            path='account/activity'
-            element={<Activity user={fakeUser} />}
+          path='activity'
+          element={<Activity user={fakeUser} />}
           />
-          <Route path='account/mycash' element={<MyCash user={fakeUser} />} />
+          <Route path='mycash' element={<MyCash user={fakeUser} />} />
           <Route
-            path='account/settings'
-            element={<Settings user={fakeUser} />}
+          path='settings'
+          element={<Settings user={fakeUser} />}
           />
-        </Route>
+          </Route>
 
-        <Route path='/login' element={<LoginPage />} />
-      </Routes>
+          <Route path='/login' element={<LoginPage />} />
+          </Routes> */}
     </BrowserRouter>
   );
 };

@@ -42,7 +42,7 @@ const Sidebar: FC<SidebarProps> = (props) => {
     );
   };
   return (
-    <div className='!h-full account-navigation-bar flex-container'>
+    <div className='!h-full account-navigation-bar flex-container theme-bg theme-green'>
       <SidebarProfile user={user} />
 
       <nav className='nav-items'>

@@ -28,8 +28,8 @@ export const MyCash: FC<MyCashProps> = (props) => {
 
         <div className='dda-display clickable'>
           <h3 className='account-module-header'>Direct Deposit</h3>
-          {user.accounts?.map((account) => (
-            <BankDepositCard account={account} />
+          {user.accounts?.map((account, idx) => (
+            <BankDepositCard key={idx} account={account} />
           ))}
         </div>
       </div>

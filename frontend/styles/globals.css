@@ -1,4 +1,5 @@
 @import 'antd/dist/antd.variable.min.css';
+@import './home.css';
 
 @tailwind base;
 @tailwind components;
