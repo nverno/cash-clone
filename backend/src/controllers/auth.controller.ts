@@ -19,9 +19,14 @@ export class AuthController {
   public logIn = catchAsync(
     async (req: Request, res: Response): Promise<void> => {
       const userData: LoginUserDto = req.body;
-      const { cookie, user } = await this.authService.login(userData);
-      res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json(user);
+      if (!(userData.password || userData.code)) {
+        await this.authService.generateLoginCode(userData);
+        res.status(200);
+      } else {
+        const { cookie, user } = await this.authService.login(userData);
+        res.setHeader('Set-Cookie', [cookie]);
+        res.status(200).json(user);
+      }
     },
   );
 

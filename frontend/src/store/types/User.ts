@@ -14,3 +14,13 @@ export interface User {
   accounts?: BankAccount[];
   settings: UserSettings;
 }
+
+export interface LoginUserForm {
+  phoneOrEmail: string;
+}
+
+export interface LoginUserDto {
+  email?: string;
+  phoneNumber?: string;
+  password: string;
+}

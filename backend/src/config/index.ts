@@ -7,5 +7,16 @@ export const DEBUG =
     ? `${DEBUG_PREFIX}:*`
     : undefined;
 export const CREDENTIALS = process.env.CREDENTIALS === 'true';
-export const { NODE_ENV, PORT, SECRET_KEY, LOG_FORMAT, LOG_DIR, ORIGIN } =
-  process.env;
+export const {
+  NODE_ENV,
+  PORT,
+  SECRET_KEY,
+  LOG_FORMAT,
+  LOG_DIR,
+  ORIGIN,
+  SMTP_PORT = 2525,
+  SMTP_HOST = 'localhost',
+  SMTP_USERNAME,
+  SMTP_PASSWORD,
+  EMAIL_ACCESS_KEY,
+} = process.env;

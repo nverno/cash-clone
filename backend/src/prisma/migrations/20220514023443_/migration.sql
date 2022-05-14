@@ -17,6 +17,16 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "VerificationCode" (
+    "id" TEXT NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "code" TEXT NOT NULL,
+    "userId" TEXT,
+
+    CONSTRAINT "VerificationCode_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "PhoneNumber" (
     "phoneNumber" TEXT NOT NULL,
     "userId" TEXT
@@ -76,6 +86,9 @@ CREATE TABLE "BankAccount" (
 CREATE UNIQUE INDEX "User_cashTag_key" ON "User"("cashTag");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "VerificationCode_userId_key" ON "VerificationCode"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PhoneNumber_phoneNumber_key" ON "PhoneNumber"("phoneNumber");
 
 -- CreateIndex
@@ -86,6 +99,9 @@ CREATE UNIQUE INDEX "Settings_userId_key" ON "Settings"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Card_userId_key" ON "Card"("userId");
+
+-- AddForeignKey
+ALTER TABLE "VerificationCode" ADD CONSTRAINT "VerificationCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PhoneNumber" ADD CONSTRAINT "PhoneNumber_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -33,14 +33,14 @@ export class CreateUserDto {
 }
 
 export class LoginUserDto {
-  @IsOptional()
-  @IsEmail()
-  public email?: string;
+  @IsString()
+  public phoneOrEmail: string;
 
   @IsOptional()
   @IsString()
-  public phoneNumber?: string;
+  public password?: string;
 
+  @IsOptional()
   @IsString()
-  public password: string;
+  public code?: string;
 }

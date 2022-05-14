@@ -9,7 +9,7 @@ export type PrivacySetting = typeof PrivacySetting[keyof typeof PrivacySetting];
 
 export interface UserSettings {
   id?: number;
-  userId: string;
+  userId?: string;
   allowPay: boolean;
   privacy: PrivacySetting;
 }

@@ -1,10 +1,11 @@
 import { hash } from 'bcrypt';
-import { User } from '@prisma/client';
+import { Prisma, User, VerificationCode } from '@prisma/client';
 import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
 import { isEmpty } from '@utils';
 import prisma from '@/client';
 import { capitalize } from 'lodash';
+import { isEmail, isPhoneNumber } from 'class-validator';
 
 export class UserService {
   public users = prisma.user;
@@ -49,19 +50,35 @@ export class UserService {
     return `$${capitalize(data.firstName)}${capitalize(data.lastName)}`;
   }
 
+  // relations to include in user object
+  private userInclude: Prisma.UserInclude = {
+    loginCode: {},
+    settings: {},
+    accounts: {},
+    email: {},
+    phoneNumber: {},
+    addresses: {},
+  };
+
   /** Lookup user by email/phone number */
-  public async findUser(data: Partial<LoginUserDto>): Promise<User> {
+  public async findUser(data: Partial<LoginUserDto>): Promise<
+    User & {
+      loginCode: VerificationCode;
+    }
+  > {
     if (isEmpty(data)) throw new HttpException(400, 'Missing login data');
-    const { email, phoneNumber } = data;
-    const user = email
+    const { phoneOrEmail } = data;
+    const user: any = isEmail(phoneOrEmail)
       ? await this.emails.findUnique({
-          where: { email },
-          include: { user: {} },
+          where: { email: phoneOrEmail },
+          include: { user: { include: this.userInclude } },
         })
-      : await this.phones.findUnique({
-          where: { phoneNumber },
-          include: { user: {} },
-        });
+      : isPhoneNumber(phoneOrEmail)
+      ? await this.phones.findUnique({
+          where: { phoneNumber: phoneOrEmail },
+          include: { user: { include: this.userInclude } },
+        })
+      : undefined;
     if (!user) throw new HttpException(409, `Email/phone number not found`);
     return user.user;
   }

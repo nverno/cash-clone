@@ -13,6 +13,13 @@
   border: none;
 }
 
+.theme-green .account-navigation-bar span {
+  color: #fff;
+}
+.theme-green .layout-login h1 {
+  color: #fff;
+}
+
 svg {
   vertical-align: inherit;
 }

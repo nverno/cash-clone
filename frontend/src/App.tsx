@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'; // eslint-disable-line
 import '../styles/globals.css';
 import { Activity, Dashboard, MyCash, Settings } from './components';
 import { User } from './store';
+import LoginPage from './components/Login/LoginPage';
 
 export interface AppProps {}
 
@@ -17,8 +18,8 @@ const fakeUser: User = {
   lastName: 'User',
   username: 'Fake User',
   cashTag: '$FakeUser',
-  phoneNumber: '1234567890',
-  email: 'fake.user@gggmail.com',
+  phoneNumber: ['1234567890'],
+  email: ['fake.user@gggmail.com'],
   balance: 0,
   card: {
     cardNumber: '0000000000000000',
@@ -31,6 +32,10 @@ const fakeUser: User = {
       routingNumber: '123456789',
     },
   ],
+  settings: {
+    allowPay: true,
+    privacy: 'all',
+  },
 };
 
 export interface DefaultProps {
@@ -52,9 +57,16 @@ const App: FC<AppProps> = () => {
             element={<Settings user={fakeUser} />}
           />
         </Route>
+
+        <Route path='/login' element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  // set theme
+  document.body.className = 'theme-bg theme-green';
+});
 
 root.render(<App />);
