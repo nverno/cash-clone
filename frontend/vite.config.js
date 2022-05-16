@@ -8,18 +8,18 @@ const react = require('@vitejs/plugin-react');
 const dts = require('vite-dts').default;
 
 const getPkg = () => {
-  const pkg = require('./package.json')
+  const pkg = require('./package.json');
 
-  pkg.main = pkg.main || 'dist/index.js'
-  pkg.module = pkg.module || 'dist/index.es.js'
-  pkg.style = pkg.style || 'dist/index.css'
-  pkg.types = pkg.types || 'dist/index.d.ts'
-  pkg.source = pkg.source || 'src/App.tsx'
+  pkg.main = pkg.main || 'dist/index.js';
+  pkg.module = pkg.module || 'dist/index.es.js';
+  pkg.style = pkg.style || 'dist/index.css';
+  pkg.types = pkg.types || 'dist/index.d.ts';
+  pkg.source = pkg.source || 'src/App.tsx';
 
-  return pkg
-}
+  return pkg;
+};
 
-const logger = createLogger('info', { allowClearScreen: false })
+const logger = createLogger('info', { allowClearScreen: false });
 
 /**
  * Pick env vars which defined for react-scripts.
@@ -29,61 +29,66 @@ const logger = createLogger('info', { allowClearScreen: false })
 const getProcessEnv = ({ mode, command }) => {
   if (command === 'build') {
     // Leave it as is and pass it to webpack.
-    return { 'process.env': 'process.env' }
+    return { 'process.env': 'process.env' };
   }
 
-  const reactAppEnv = loadEnv(mode, '', ['REACT_APP_'])
+  const reactAppEnv = loadEnv(mode, '', ['REACT_APP_']);
 
   if (Object.keys(reactAppEnv).length) {
     return Object.fromEntries(
       Object.entries(reactAppEnv).map(([key, value]) => [
         `process.env.${key}`,
         JSON.stringify(value),
-      ])
-    )
+      ]),
+    );
   } else {
-    const coloredEnvFileName = colors.yellow(colors.bold(`.env.${mode}.local`))
-    logger.warn(`Please add ${coloredEnvFileName} to the root of project.`, {
-      timestamp: true,
-    })
+    // const coloredEnvFileName = colors.yellow(colors.bold(`.env.${mode}.local`))
+    // logger.warn(`Please add ${coloredEnvFileName} to the root of project.`, {
+    //   timestamp: true,
+    // })
   }
-}
+};
 
 /**
  * Get valid localhost dev cert.
  *
  * @param {import('vite').ConfigEnv} env
  */
-const getHttps = async ({ command }) => { // eslint-disable-line
+const getHttps = async ({ command }) => {
+  // eslint-disable-line
   if (command === 'serve') {
-    const devcert = await import('devcert')
-    return await devcert.certificateFor('localhost')
+    const devcert = await import('devcert');
+    return await devcert.certificateFor('localhost');
   }
-}
+};
 
 /** Generate `tailwind.config.js` and `postcss.config.js` if needed. */
 const ensureTailwindConfig = () => {
-  const tailwindConfigFilename = 'tailwind.config.js'
-  const postcssConfigFilename = 'postcss.config.js'
+  const tailwindConfigFilename = 'tailwind.config.js';
+  const postcssConfigFilename = 'postcss.config.js';
 
   if (!fs.existsSync(tailwindConfigFilename)) {
-    const coloredConfigFileName = colors.cyan(colors.bold(tailwindConfigFilename))
+    const coloredConfigFileName = colors.cyan(
+      colors.bold(tailwindConfigFilename),
+    );
     logger.info(`Generate ./${coloredConfigFileName}`, {
       timestamp: true,
-    })
-    const { name } = require('./package.json')
+    });
+    const { name } = require('./package.json');
     fs.writeFileSync(
       tailwindConfigFilename,
       `/** @type {import('${name}').TailwindConfig} */
-module.exports = { presets: [require('${name}/tailwind.config')] }`
-    )
+module.exports = { presets: [require('${name}/tailwind.config')] }`,
+    );
   }
 
   if (!fs.existsSync(postcssConfigFilename)) {
-    const coloredConfigFileName = colors.cyan(colors.bold(postcssConfigFilename))
+    const coloredConfigFileName = colors.cyan(
+      colors.bold(postcssConfigFilename),
+    );
     logger.info(`Generate ./${coloredConfigFileName}`, {
       timestamp: true,
-    })
+    });
     fs.writeFileSync(
       postcssConfigFilename,
       `module.exports = {
@@ -93,27 +98,27 @@ module.exports = { presets: [require('${name}/tailwind.config')] }`
     require('tailwindcss'),
     require('autoprefixer'),
   ],
-}`
-    )
+}`,
+    );
   }
-}
+};
 
 /**
  * @param {import('./vite.config').CreateConfigOptions} options
  * @returns {import('vite').UserConfigExport}
  */
 const createConfig = (options = {}) => {
-  const { base = '', tailwindcss } = options
+  const { base = '', tailwindcss } = options;
 
   return defineConfig(async (env) => {
     if (env.command === 'serve') {
-      await killPort(3000)
+      await killPort(3000);
     }
 
-    const pkg = getPkg()
+    const pkg = getPkg();
 
     if (tailwindcss) {
-      ensureTailwindConfig()
+      ensureTailwindConfig();
     }
 
     /** @type {import('vite').UserConfig} */
@@ -148,7 +153,8 @@ const createConfig = (options = {}) => {
         lib: {
           entry: path.resolve(pkg.source),
           formats: ['cjs', 'es'],
-          fileName: (format) => path.basename({ cjs: pkg.main, es: pkg.module }[format]),
+          fileName: (format) =>
+            path.basename({ cjs: pkg.main, es: pkg.module }[format]),
         },
         emptyOutDir: !process.argv.includes('--watch'),
         minify: false,
@@ -156,7 +162,8 @@ const createConfig = (options = {}) => {
         rollupOptions: {
           external: (id) => !id.startsWith('.') && !path.isAbsolute(id),
           output: {
-            assetFileNames: ({ name }) => (name === 'style.css' ? path.basename(pkg.style) : name),
+            assetFileNames: ({ name }) =>
+              name === 'style.css' ? path.basename(pkg.style) : name,
           },
         },
       },
@@ -181,7 +188,7 @@ const createConfig = (options = {}) => {
                 build.onLoad({ filter: /src\/.+\.js$/ }, async (args) => ({
                   loader: 'tsx',
                   contents: fs.readFileSync(args.path, 'utf8'),
-                }))
+                }));
               },
             },
           ],
@@ -192,10 +199,10 @@ const createConfig = (options = {}) => {
         // https: await getHttps(env),
         strictPort: true,
       },
-    }
+    };
 
-    return config
-  })
-}
+    return config;
+  });
+};
 
 export default createConfig({ base: '/', tailwindcss: true });
