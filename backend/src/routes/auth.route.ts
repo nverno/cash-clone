@@ -31,6 +31,9 @@ export class AuthRoute implements Routes {
       authMiddleware,
       this.authController.logOut,
     );
+
+    // testing
+    this.router.get(`${this.path}login-code`, this.authController.getLoginCode);
   }
 }
 

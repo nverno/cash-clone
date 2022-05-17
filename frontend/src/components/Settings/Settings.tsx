@@ -11,6 +11,15 @@ export interface SettingsProps extends DefaultProps {}
 
 export const Settings: FC<SettingsProps> = (props) => {
   const { user } = props;
+  if (!user) return null;
+  const [displayName, setDisplayName] = React.useState(
+    user?.username ?? user.firstName + ' ' + user.lastName,
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayName(e.target.value);
+  };
+
   return (
     <div className='layout-edit-settings flex-container flex-v flex-fill'>
       <div className='edit-settings-header theme-white theme-bg'>
@@ -59,6 +68,8 @@ export const Settings: FC<SettingsProps> = (props) => {
                   autoCapitalize='off'
                   id='display_name'
                   placeholder='Display Name'
+                  value={displayName}
+                  onChange={handleChange}
                 />
               </div>
               <div className='spinner-container'></div>
@@ -119,7 +130,7 @@ export const Settings: FC<SettingsProps> = (props) => {
           </div>
         </div>
 
-        <div className='config-column funding-items'>
+        <div className='config-column funding-items mt-[25px]'>
           <h3 className='account-module-header'>Your Info</h3>
           <div className='account-module-container aliases'>
             <div className='settings-display-field truncate-text phone-number'>
@@ -127,7 +138,7 @@ export const Settings: FC<SettingsProps> = (props) => {
               <a className='delete-button'></a>
             </div>
             <div className='settings-display-field truncate-text email-address'>
-              {user.email}
+              {user.email?.length && user.email[0].email}
               <a className='delete-button'></a>
             </div>
             <div className='settings-display-field add-email-or-sms has-add-action'>
@@ -166,7 +177,7 @@ export const Settings: FC<SettingsProps> = (props) => {
             </div>
           </div>
 
-          <h3 className='account-module-header'>Security</h3>
+          <h3 className='account-module-header mt-[25px]'>Security</h3>
           <div className='account-module-container security-lock-container'>
             <div className='theme-link-color settings-display-field change-passcode'>
               Change PIN

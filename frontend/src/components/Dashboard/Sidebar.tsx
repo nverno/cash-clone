@@ -1,7 +1,8 @@
 import classnames from 'classnames';
 import React, { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { DefaultProps } from '../../App';
+import { useLogoutMutation } from '../../store';
 import SidebarProfile from './SidebarProfile';
 
 export interface SidebarProps extends DefaultProps {}
@@ -19,12 +20,23 @@ const Sidebar: FC<SidebarProps> = (props) => {
   const location = useLocation();
   const [activeLink, setActiveLink] =
     React.useState<SidebarLinkType>('activity');
+  const [signOut] = useLogoutMutation();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const parts = location.pathname.split('/');
     const current = parts[parts.length - 1];
     if (current !== activeLink) setActiveLink(current as SidebarLinkType);
   }, [location]);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut().unwrap();
+      navigate('/');
+    } catch (err) {
+      console.error('sign out:', err);
+    }
+  };
 
   const SidebarLink: FC<SidebarLink> = (props) => {
     const { type, title, children } = props;
@@ -102,7 +114,12 @@ const Sidebar: FC<SidebarProps> = (props) => {
           </div>
         </SidebarLink>
 
-        <a href='#' title='Sign Out' className='nav-item signout'>
+        <a
+          href='#'
+          title='Sign Out'
+          className='nav-item signout'
+          onClick={handleSignOut}
+        >
           <div className='inline-svg '>
             <svg
               xmlns='http://www.w3.org/2000/svg'

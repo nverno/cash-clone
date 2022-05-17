@@ -1,11 +1,47 @@
 import { hash } from 'bcrypt';
-import { Prisma, User, VerificationCode } from '@prisma/client';
+import {
+  BankAccount,
+  Card,
+  Email,
+  MailingAddress,
+  PhoneNumber,
+  Prisma,
+  User,
+  VerificationCode,
+} from '@prisma/client';
 import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
-import { isEmpty } from '@utils';
+import { cleanSms, isEmpty, isSmsNumber } from '@utils';
 import prisma from '@/client';
 import { capitalize } from 'lodash';
-import { isEmail, isPhoneNumber } from 'class-validator';
+import { isEmail } from 'class-validator';
+import faker from '@faker-js/faker';
+
+const generateCard = (card?: Partial<Card>) => ({
+  cardNumber:
+    card?.cardNumber ?? faker.finance.creditCardNumber('################'),
+  cardActivated: card?.cardActivated ?? true, // faker.datatype.boolean(),
+});
+
+const generateAccount = (acct?: Partial<BankAccount>) => {
+  return {
+    name: acct?.name ?? 'Bank of America', // faker.company.companyName(),
+    accountNumber: acct?.accountNumber ?? faker.finance.account(),
+    routingNumber: acct?.routingNumber ?? faker.finance.routingNumber(),
+  };
+};
+
+const generateAddress = (addr?: MailingAddress) => {
+  if (addr) return addr;
+  const state = faker.address.stateAbbr();
+  return {
+    address: faker.address.streetAddress(),
+    city: faker.address.cityName(),
+    state,
+    zip: faker.address.zipCodeByState(state),
+    unit: Math.random() < 0.5 ? faker.address.buildingNumber() : undefined,
+  };
+};
 
 export class UserService {
   public users = prisma.user;
@@ -14,30 +50,30 @@ export class UserService {
 
   public async checkNewEmail({ email }: Partial<CreateUserDto>): Promise<void> {
     if (!email) return;
+    let res: Email;
     try {
-      const res = await this.emails.findUnique({ where: { email } });
-      if (res) {
-        throw new HttpException(409, `You're email ${email} already exists`);
-      }
+      res = await this.emails.findUnique({ where: { email } });
     } catch {}
+    if (res) throw new HttpException(409, `Email ${email} already exists`);
   }
 
   public async checkNewPhone({
     phoneNumber,
   }: Partial<CreateUserDto>): Promise<void> {
     if (!phoneNumber) return;
+    let res: PhoneNumber;
     try {
-      const res = await this.phones.findUnique({ where: { phoneNumber } });
-      if (res) {
-        throw new HttpException(
-          409,
-          `You're phone number ${phoneNumber} already exists`,
-        );
-      }
+      res = await this.phones.findUnique({ where: { phoneNumber } });
     } catch {}
+    if (res)
+      throw new HttpException(
+        409,
+        `Phone number ${phoneNumber} already exists`,
+      );
   }
 
   public async checkNewUserData(data: CreateUserDto): Promise<void> {
+    if (data.phoneNumber) data.phoneNumber = cleanSms(data.phoneNumber);
     await this.checkNewEmail(data);
     await this.checkNewPhone(data);
   }
@@ -58,6 +94,7 @@ export class UserService {
     email: {},
     phoneNumber: {},
     addresses: {},
+    card: {},
   };
 
   /** Lookup user by email/phone number */
@@ -73,9 +110,9 @@ export class UserService {
           where: { email: phoneOrEmail },
           include: { user: { include: this.userInclude } },
         })
-      : isPhoneNumber(phoneOrEmail)
+      : isSmsNumber(phoneOrEmail)
       ? await this.phones.findUnique({
-          where: { phoneNumber: phoneOrEmail },
+          where: { phoneNumber: cleanSms(phoneOrEmail) },
           include: { user: { include: this.userInclude } },
         })
       : undefined;
@@ -84,31 +121,36 @@ export class UserService {
   }
 
   public async findAllUser(): Promise<User[]> {
-    const allUser: User[] = await this.users.findMany();
+    const allUser: User[] = await this.users.findMany({
+      include: this.userInclude,
+    });
     return allUser;
   }
 
   public async findUserById(userId: string): Promise<User> {
     if (isEmpty(userId)) throw new HttpException(400, 'Missing userId');
 
-    const findUser: User = await this.users.findUnique({
-      where: { id: userId },
-    });
-    if (!findUser) throw new HttpException(409, 'User not found');
-
-    return findUser;
+    try {
+      const findUser: User = await this.users.findUnique({
+        where: { id: userId },
+        include: this.userInclude,
+      });
+      return findUser;
+    } catch (_err) {
+      throw new HttpException(409, 'User not found');
+    }
   }
 
   public async createUser(userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing user data');
-    try {
-      await this.checkNewUserData(userData);
-    } catch {
-      throw new HttpException(
-        409,
-        'An account with this email or phone number already exists',
-      );
-    }
+    // try {
+    await this.checkNewUserData(userData);
+    // } catch {
+    //   throw new HttpException(
+    //     409,
+    //     'An account with this email or phone number already exists',
+    //   );
+    // }
 
     const { email, phoneNumber, password, ...data } = userData;
     const hashedPassword = await hash(password, 10);
@@ -118,9 +160,13 @@ export class UserService {
         password: hashedPassword,
         cashTag: this.createCashTag(data),
         email: { create: { email } },
-        phoneNumber: { create: { phoneNumber } },
+        phoneNumber: { create: { phoneNumber: cleanSms(phoneNumber) } },
         settings: { create: {} },
+        card: { create: generateCard() },
+        accounts: { create: generateAccount() },
+        addresses: { create: generateAddress() },
       },
+      include: this.userInclude,
     });
   }
 
@@ -139,6 +185,7 @@ export class UserService {
     return this.users.update({
       where: { id: userId },
       data: { ...userData, password: hashedPassword },
+      include: this.userInclude,
     });
   }
 

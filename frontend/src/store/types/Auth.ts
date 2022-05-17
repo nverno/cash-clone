@@ -12,6 +12,9 @@ export interface LoginUserDto {
 }
 
 export interface LoginResponse {
-  token: string;
+  token: {
+    token: string;
+    expiresIn: number;
+  };
   user: User;
 }

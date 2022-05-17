@@ -17,8 +17,15 @@ export const formatInitial = (user: User) => {
   return user.firstName[0].toLocaleUpperCase();
 };
 
-export const formatCreditCard = (card: Card) => {
-  return card.cardNumber.slice(12);
+export const formatCreditCard = (show: boolean, card?: Card) => {
+  const parts = new Array<string>(4).fill('••••');
+  if (!card) return parts;
+  if (!show) parts[3] = card.cardNumber.slice(12);
+  else {
+    for (let i = 0; i < 4; i++)
+      parts[i] = card.cardNumber.slice(4 * i, 4 * i + 4);
+  }
+  return parts;
 };
 
 export const formatRoutingNumber = (account: BankAccount) => {
@@ -33,8 +40,10 @@ export const formatAccountNumber = (account: BankAccount) => {
  * Phone numbers
  */
 export const formatUserPhoneNumber = (user: User) => {
-  const areaCode = user.phoneNumber.slice(0, 3);
-  const num = user.phoneNumber.slice(3);
+  if (!user.phoneNumber?.length) return null;
+  const phoneNumber = user.phoneNumber[0].phoneNumber;
+  const areaCode = phoneNumber.slice(0, 3);
+  const num = phoneNumber.slice(3);
   return `(${areaCode}) ${num.slice(0, 3)}-${num.slice(3)}`;
 };
 
@@ -60,8 +69,8 @@ export const splitPhoneNumber = (input: string): string[] => {
 // 23456       => (234) 56
 export const formatPhoneNumber = (input: string): string => {
   const [code, area, a, b] = splitPhoneNumber(input);
-  let res = code.length ? code + ' ' : '';
-  if (area.length === 3) res += '(' + area + ')';
+  let res = code?.length ? code + ' ' : '';
+  res += area.length === 3 ? '(' + area + ')' : area;
   if (a.length) res += ' ' + a;
   if (b.length) res += '-' + b;
   return res;

@@ -22,8 +22,7 @@ const steps = [
   {
     title: (email: string) => (
       <>
-        Cool! We emailed a code to{' '}
-        <span className='wrap-together'>{email}</span>
+        Cool! We sent a code to <span className='wrap-together'>{email}</span>
       </>
     ),
     invalid: (email: string) => (
@@ -33,6 +32,8 @@ const steps = [
     buttonText: 'Sign In',
   },
 ];
+
+const cleanPhoneOrEmail = (txt: string) => txt.replaceAll(/[+ \t()-]/g, '');
 
 const LoginPage: FC<LoginPageProps> = () => {
   const [stepNum, setStepNum] = React.useState(0);
@@ -51,7 +52,7 @@ const LoginPage: FC<LoginPageProps> = () => {
    */
   const handleChange = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      let txt = e.target.value.replaceAll(/[+ \t()-]/g, '');
+      let txt = cleanPhoneOrEmail(e.target.value);
 
       if (isEmail(txt)) {
         !showSubmit && setShowSubmit(true);
@@ -71,13 +72,11 @@ const LoginPage: FC<LoginPageProps> = () => {
   const handleChangeCode = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const txt = e.target.value.replaceAll('-', '').slice(0, 12);
-      console.debug('DEBUG: txt:', txt);
       let res = '';
       for (let i = 0; i < txt.length; i += 3) {
         if (res.length) res += '-';
         res += txt.slice(i, i + 3);
       }
-      console.debug('DEBUG: res:', res);
       setCode(res);
     },
   );
@@ -99,12 +98,13 @@ const LoginPage: FC<LoginPageProps> = () => {
     setIsSubmitting(true);
     try {
       if (stepNum === 0) {
-        console.debug('DEBUG: email:', email);
-        await requestLoginCode({ phoneOrEmail: email }).unwrap();
+        await requestLoginCode({
+          phoneOrEmail: cleanPhoneOrEmail(email),
+        }).unwrap();
       } else {
-        console.debug('DEBUG: code:', code);
+        if (!code) throw new Error('missing code');
         await loginPhoneOrEmail({
-          phoneOrEmail: email,
+          phoneOrEmail: cleanPhoneOrEmail(email),
           code: code.replaceAll('-', ''),
         }).unwrap();
         navigate('account');

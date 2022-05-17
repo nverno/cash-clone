@@ -1,19 +1,24 @@
 import classnames from 'classnames';
 import React, { FC } from 'react';
 import { DefaultProps } from '../../App';
+// import { Card } from '../../store';
 import { formatCreditCard, formatName } from '../../utils';
 
 export interface MyCardProps extends DefaultProps {}
 
 const MyCard: FC<MyCardProps> = (props) => {
   const { user } = props;
+  const [showCard, setShowCard] = React.useState(false);
   const [showMenu, setShowMenu] = React.useState(false);
+
   if (!user) return null;
+  const card = formatCreditCard(showCard, user.card);
   return (
     <div
       className='card-likeness-section'
       onClick={() => setShowMenu(!showMenu)}
     >
+      {/* <pre>{JSON.stringify(card, null, 2)}</pre> */}
       <div className='card-likeness'>
         <div className='card-inner'>
           <div
@@ -22,19 +27,22 @@ const MyCard: FC<MyCardProps> = (props) => {
           >
             <div className='tooltip-bubble'>Copied!</div>
             <div className='card-number-wrapper flex justify-between'>
-              <div className='card-number-section'>••••</div>
-              <div className='card-number-section'>••••</div>
-              <div className='card-number-section'>••••</div>
-              <div className='card-number-section'>
-                {formatCreditCard(user.card)}
-              </div>
+              {card.map((part, idx) => (
+                <div key={idx} className='card-number-section'>
+                  {part}
+                </div>
+              ))}
             </div>
           </div>
 
           <div className='card-bottom'>
             <div className='card-details'>
               <div className='cardholder-name'>{formatName(user)}</div>
-              <span className='card-expiry-text'>Card Not Activated</span>
+              <span className='card-expiry-text'>
+                {user.card?.cardActivated
+                  ? 'Card Activated'
+                  : 'Card Not Activated'}
+              </span>
             </div>
             <div className='inline-svg card-logo mr-[-19px]'>
               <svg
@@ -60,7 +68,15 @@ const MyCard: FC<MyCardProps> = (props) => {
           <div className='action-items'>
             <div className='action-item flex-h virtual-card-visibility'>
               <span className='title'>Show Card Info</span>
-              <div className='toggle-switch checked'></div>
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowCard(!showCard);
+                }}
+                className={classnames('toggle-switch', {
+                  checked: !showCard,
+                })}
+              ></div>
             </div>
           </div>
         </div>

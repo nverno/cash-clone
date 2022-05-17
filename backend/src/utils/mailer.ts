@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import {
-  MAIL_USERNAME,
-  MAIL_PASSWORD,
+  MAILER_USERNAME,
+  MAILER_PASSWORD,
   OAUTH_CLIENTID,
   OAUTH_CLIENT_SECRET,
   OAUTH_REFRESH_TOKEN,
@@ -13,7 +13,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 const debug = Debug('mailer');
 
 type EmailCode = { email: string; code: string };
-export const emailCode = async (
+export const sendEmail = async (
   data: EmailCode,
 ): Promise<SMTPTransport.SentMessageInfo> => {
   const { email, code } = data;
@@ -22,8 +22,8 @@ export const emailCode = async (
     service: 'gmail',
     auth: {
       type: 'OAUTH2',
-      user: MAIL_USERNAME,
-      pass: MAIL_PASSWORD,
+      user: MAILER_USERNAME,
+      pass: MAILER_PASSWORD,
       clientId: OAUTH_CLIENTID,
       clientSecret: OAUTH_CLIENT_SECRET,
       refreshToken: OAUTH_REFRESH_TOKEN,
@@ -31,7 +31,7 @@ export const emailCode = async (
   });
 
   const mailOptions = {
-    from: MAIL_USERNAME,
+    from: MAILER_USERNAME,
     to: email,
     subject: `Cash App Sign In Code ${code}`,
     text: code,

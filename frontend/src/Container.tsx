@@ -8,7 +8,7 @@ import {
   Settings,
 } from './components';
 
-import { fakeUser } from './mocks';
+// import { fakeUser } from './mocks';
 import LoginPage from './components/Login/LoginPage';
 import { useAppSelector } from './store';
 
@@ -16,6 +16,7 @@ export interface ContainerProps {}
 
 const Container: FC<ContainerProps> = () => {
   const loggedIn = useAppSelector((state) => state.auth?.token);
+  const user = useAppSelector((state) => state.user);
 
   const displayLoggedOut = () => (
     <Routes>
@@ -35,10 +36,10 @@ const Container: FC<ContainerProps> = () => {
 
   const displayLoggedIn = () => (
     <Routes>
-      <Route path='/account' element={<Dashboard user={fakeUser} />}>
-        <Route path='activity' element={<Activity user={fakeUser} />} />
-        <Route path='mycash' element={<MyCash user={fakeUser} />} />
-        <Route path='settings' element={<Settings user={fakeUser} />} />
+      <Route path='/account' element={<Dashboard user={user} />}>
+        <Route path='activity' element={<Activity user={user} />} />
+        <Route path='mycash' element={<MyCash user={user} />} />
+        <Route path='settings' element={<Settings user={user} />} />
       </Route>
 
       <Route path='*' element={<Navigate replace to='/account/activity' />} />

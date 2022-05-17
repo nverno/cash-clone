@@ -1,13 +1,13 @@
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { User } from '@prisma/client';
-import { SECRET_KEY } from '@config';
+import { User, VerificationCode } from '@prisma/client';
 import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
 import { DataStoredInToken, TokenData } from '@interfaces';
-import { Debug, emailCode, isEmpty } from '@utils'; // eslint-disable-line
+import { Debug, sendEmail, sendSMS, isEmpty, isSmsNumber } from '@utils'; // eslint-disable-line
 import UserService from './users.service';
 import prisma from '@/client';
+import { SECRET_KEY, SMS_ENABLED, MAILER_ENABLED } from '@config'; // eslint-disable-line
 import { isEmail } from 'class-validator';
 const debug = Debug('auth'); // eslint-disable-line
 
@@ -35,12 +35,40 @@ export class AuthService {
     });
 
     // Send code
-    if (!isEmail(phoneOrEmail))
-      throw new HttpException(400, 'Sending code by phone not supported');
+    if (isEmail(phoneOrEmail)) {
+      if (MAILER_ENABLED) {
+        debug('skipping sending email');
+        // await sendEmail({ email: phoneOrEmail, code });
+      } else
+        throw new HttpException(
+          500,
+          `Contact by email not currently supported`,
+        );
+    } else if (isSmsNumber(phoneOrEmail)) {
+      if (SMS_ENABLED) {
+        await sendSMS({ phoneNo: phoneOrEmail, code });
+        debug('sent sms');
+      } else
+        throw new HttpException(500, 'Contact by SMS not currently supported');
+    } else
+      throw new HttpException(
+        500,
+        `Unrecognized phoneOrEmail: ${phoneOrEmail}`,
+      );
 
     debug('generated login code:', code);
+  }
 
-    // await emailCode({ email: phoneOrEmail, code });
+  private async getUser(userData: LoginUserDto): Promise<User> {
+    if (isEmpty(userData)) throw new HttpException(400, 'Missing login data');
+    const { phoneOrEmail } = userData;
+    return this.userService.findUser({ phoneOrEmail });
+  }
+
+  // testing
+  public async getLoginCode(userData: LoginUserDto): Promise<VerificationCode> {
+    const user = await this.getUser(userData);
+    return this.codes.findUnique({ where: { userId: user.id } });
   }
 
   // Check that given login code is valid for user
@@ -70,15 +98,16 @@ export class AuthService {
         user.password,
       );
       if (!isPasswordMatching) throw new HttpException(400, 'Invalid password');
-    } else if (!user.loginCode || user.loginCode.code !== code) {
-      throw new HttpException(400, 'Invalid login code');
+    } else if (!user?.loginCode?.code.length || user.loginCode.code !== code) {
+      throw new HttpException(400, `Invalid login code: ${code}`);
     } else {
       // reset user login code
-      await this.users.update({
-        where: { id: user.id },
-        data: { loginCode: { disconnect: true } },
+      await this.codes.update({
+        where: { userId: user.id },
+        data: { code: '' },
       });
     }
+    delete user.loginCode;
 
     const tokenData = this.createToken(user);
     // const cookie = this.createCookie(tokenData);
@@ -90,7 +119,8 @@ export class AuthService {
   public async logout(userData: User): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing logout data');
 
-    const user: User = await this.userService.findUser(userData);
+    // XXX: should blacklist the JWT token
+    const user: User = await this.userService.findUserById(userData.id);
     if (!user) throw new HttpException(400, 'User data not found');
 
     return user;

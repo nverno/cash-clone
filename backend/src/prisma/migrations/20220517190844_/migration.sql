@@ -18,84 +18,79 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "VerificationCode" (
-    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "code" TEXT NOT NULL,
-    "userId" TEXT,
 
-    CONSTRAINT "VerificationCode_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "VerificationCode_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
 CREATE TABLE "PhoneNumber" (
     "phoneNumber" TEXT NOT NULL,
-    "userId" TEXT
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "PhoneNumber_pkey" PRIMARY KEY ("phoneNumber")
 );
 
 -- CreateTable
 CREATE TABLE "Email" (
     "email" TEXT NOT NULL,
-    "userId" TEXT
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Email_pkey" PRIMARY KEY ("email")
 );
 
 -- CreateTable
 CREATE TABLE "MailingAddress" (
-    "id" SERIAL NOT NULL,
     "address" TEXT NOT NULL,
     "city" TEXT NOT NULL,
     "state" TEXT NOT NULL,
     "zip" TEXT NOT NULL,
     "unit" TEXT,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "MailingAddress_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "MailingAddress_pkey" PRIMARY KEY ("userId","address")
 );
 
 -- CreateTable
 CREATE TABLE "Settings" (
-    "id" SERIAL NOT NULL,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
     "allowPay" BOOLEAN NOT NULL DEFAULT true,
     "privacy" "PrivacySetting" NOT NULL DEFAULT E'all',
 
-    CONSTRAINT "Settings_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Settings_pkey" PRIMARY KEY ("userId")
 );
 
 -- CreateTable
 CREATE TABLE "Card" (
-    "id" SERIAL NOT NULL,
     "cardNumber" TEXT NOT NULL,
     "cardActivated" BOOLEAN DEFAULT false,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "Card_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Card_pkey" PRIMARY KEY ("cardNumber")
 );
 
 -- CreateTable
 CREATE TABLE "BankAccount" (
-    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "accountNumber" TEXT NOT NULL,
     "routingNumber" TEXT NOT NULL,
-    "userId" TEXT,
+    "userId" TEXT NOT NULL,
 
-    CONSTRAINT "BankAccount_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "BankAccount_pkey" PRIMARY KEY ("accountNumber","routingNumber")
+);
+
+-- CreateTable
+CREATE TABLE "Blacklist" (
+    "token" TEXT NOT NULL,
+    "expiration" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Blacklist_pkey" PRIMARY KEY ("token")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_cashTag_key" ON "User"("cashTag");
-
--- CreateIndex
-CREATE UNIQUE INDEX "VerificationCode_userId_key" ON "VerificationCode"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PhoneNumber_phoneNumber_key" ON "PhoneNumber"("phoneNumber");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Email_email_key" ON "Email"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Settings_userId_key" ON "Settings"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Card_userId_key" ON "Card"("userId");

@@ -40,6 +40,17 @@ export class AuthController {
       res.status(200).json(logOutUserData);
     },
   );
+
+  // testing
+  public getLoginCode = catchAsync(
+    async (req: Request, res: Response): Promise<void> => {
+      const { phoneOrEmail } = req.query;
+      const code = await this.authService.getLoginCode({
+        phoneOrEmail: String(phoneOrEmail),
+      });
+      res.status(200).json(code);
+    },
+  );
 }
 
 export default AuthController;

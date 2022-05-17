@@ -3,6 +3,9 @@ import { UsersController } from '@controllers';
 import { CreateUserDto } from '@dtos';
 import { Routes } from '@interfaces';
 import { validationMiddleware } from '@middlewares';
+import { uuidRe } from '@utils';
+
+const userId = uuidRe('id');
 
 export class UsersRoute implements Routes {
   public path = '/users';
@@ -15,19 +18,22 @@ export class UsersRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.usersController.getUsers);
-    this.router.get(`${this.path}/:id(\\d+)`, this.usersController.getUserById);
+    this.router.get(`${this.path}/${userId}`, this.usersController.getUserById);
+
     this.router.post(
       `${this.path}`,
       validationMiddleware(CreateUserDto, 'body'),
       this.usersController.createUser,
     );
+
     this.router.put(
-      `${this.path}/:id(\\d+)`,
+      `${this.path}/${userId}`,
       validationMiddleware(CreateUserDto, 'body', true),
       this.usersController.updateUser,
     );
+
     this.router.delete(
-      `${this.path}/:id(\\d+)`,
+      `${this.path}/${userId}`,
       this.usersController.deleteUser,
     );
   }

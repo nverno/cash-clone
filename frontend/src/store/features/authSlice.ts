@@ -36,14 +36,18 @@ export const authSlice = createSlice({
       authApi.endpoints.loginPhoneOrEmail.matchFulfilled,
       (state, { payload }) => {
         const { user, token } = payload;
-        console.debug('DEBUG: payload:', payload);
         if (token) {
-          localStorage.setItem('authtoken', token);
+          localStorage.setItem('authtoken', token.token);
         }
-        state.token = token;
+        state.token = token.token;
         state.userId = user.id;
         state.isAdmin = user?.roles?.includes('admin');
       },
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.logout.matchFulfilled,
+      () => initialState,
     );
   },
 });

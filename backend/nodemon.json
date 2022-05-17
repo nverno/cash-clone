@@ -2,6 +2,7 @@
   "watch": [
     "src",
     ".env",
+    ".env.development.local",
     "nodemon.json",
     "swagger.yaml",
     "tsconfig.json"
