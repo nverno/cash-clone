@@ -27,7 +27,7 @@ export class AuthService {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing login data');
     const { phoneOrEmail } = userData;
     const user: User = await this.userService.findUser({ phoneOrEmail });
-    const code = String(Math.floor(Math.random() * 1e6)).padStart(6);
+    const code = String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
     await this.codes.upsert({
       where: { userId: user.id },
       update: { code },
@@ -39,7 +39,7 @@ export class AuthService {
       throw new HttpException(400, 'Sending code by phone not supported');
 
     debug('generated login code:', code);
-    emailCode({ email: phoneOrEmail, code });
+    return emailCode({ email: phoneOrEmail, code });
   }
 
   // Check that given login code is valid for user
@@ -69,13 +69,13 @@ export class AuthService {
         user.password,
       );
       if (!isPasswordMatching) throw new HttpException(400, 'Invalid password');
-    } else if (!user.loginCode.code || user.loginCode.code !== code) {
+    } else if (!user.loginCode || user.loginCode.code !== code) {
       throw new HttpException(400, 'Invalid login code');
     } else {
       // reset user login code
-      await this.codes.update({
-        where: { userId: user.id },
-        data: { code: null },
+      await this.users.update({
+        where: { id: user.id },
+        data: { loginCode: { disconnect: true } },
       });
     }
 

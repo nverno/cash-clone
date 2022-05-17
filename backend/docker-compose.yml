@@ -45,45 +45,45 @@ services:
       # NOTE: not default on host!! only b/c conflicts w/ other running postgres
       - '5434:5432'
       
-  emailengine:
-      restart: always
-      image: andris9/emailengine:v2
-      ports:
-          # API and web interface
-          - '3001:3000'
-          # SMTP for message submission
-          - '2525:2525'
-      networks:
-        - backend
-      depends_on:
-          - redis
-      environment:
-          # Configuration to EmailEngine can be passed via environment variables
-          # For full list see https://github.com/postalsys/emailengine#config-mapping
+  # emailengine:
+  #     restart: always
+  #     image: andris9/emailengine:v2
+  #     ports:
+  #         # API and web interface
+  #         - '3001:3000'
+  #         # SMTP for message submission
+  #         - '2525:2525'
+  #     networks:
+  #       - backend
+  #     depends_on:
+  #         - redis
+  #     environment:
+  #         # Configuration to EmailEngine can be passed via environment variables
+  #         # For full list see https://github.com/postalsys/emailengine#config-mapping
 
-          # Settings to write to v1/settings on startup (https://api.emailengine.app/#operation/postV1Settings)
-          # The following value is a YAML block scalar string, so make it sure it is properly indented
-          # This configuration enables SMTP server for local submission
-          EENGINE_SETTINGS: >
-              {
-                  "smtpServerEnabled": true,
-                  "smtpServerPort": 2525,
-                  "smtpServerHost": "0.0.0.0",
-                  "smtpServerAuthEnabled": true,
-                  "smtpServerPassword": "passw0rd"
-              }
-          # Encryption secret
-          EENGINE_SECRET: 'secret'
-          # Database connection URL
-          EENGINE_REDIS: 'redis://redis:6379/2'
+  #         # Settings to write to v1/settings on startup (https://api.emailengine.app/#operation/postV1Settings)
+  #         # The following value is a YAML block scalar string, so make it sure it is properly indented
+  #         # This configuration enables SMTP server for local submission
+  #         EENGINE_SETTINGS: >
+  #             {
+  #                 "smtpServerEnabled": true,
+  #                 "smtpServerPort": 2525,
+  #                 "smtpServerHost": "0.0.0.0",
+  #                 "smtpServerAuthEnabled": true,
+  #                 "smtpServerPassword": "passw0rd"
+  #             }
+  #         # Encryption secret
+  #         EENGINE_SECRET: 'secret'
+  #         # Database connection URL
+  #         EENGINE_REDIS: 'redis://redis:6379/2'
   
-  redis:
-      image: redis:alpine
-      restart: always
-      networks:
-        - backend
-      volumes:
-          - /data
+  # redis:
+  #     image: redis:alpine
+  #     restart: always
+  #     networks:
+  #       - backend
+  #     volumes:
+  #         - /data
 
 networks:
   backend:
