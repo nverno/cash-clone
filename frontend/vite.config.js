@@ -54,8 +54,8 @@ const getProcessEnv = ({ mode, command }) => {
  *
  * @param {import('vite').ConfigEnv} env
  */
+// eslint-disable-next-line
 const getHttps = async ({ command }) => {
-  // eslint-disable-line
   if (command === 'serve') {
     const devcert = await import('devcert');
     return await devcert.certificateFor('localhost');
