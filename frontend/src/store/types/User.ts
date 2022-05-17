@@ -13,6 +13,7 @@ export interface User {
   card: Card;
   accounts?: BankAccount[];
   settings: UserSettings;
+  roles?: string[];
 }
 
 export interface LoginUserForm {
