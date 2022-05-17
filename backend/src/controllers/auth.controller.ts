@@ -21,11 +21,12 @@ export class AuthController {
       const userData: LoginUserDto = req.body;
       if (!(userData.password || userData.code)) {
         await this.authService.generateLoginCode(userData);
-        res.status(200);
+        res.status(200).json({ message: 'Sent login code' });
       } else {
-        const { cookie, user } = await this.authService.login(userData);
+        const { token, user } = await this.authService.login(userData);
+        const cookie = this.authService.createCookie(token);
         res.setHeader('Set-Cookie', [cookie]);
-        res.status(200).json(user);
+        res.status(200).json({ token, user });
       }
     },
   );

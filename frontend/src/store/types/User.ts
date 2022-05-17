@@ -15,13 +15,3 @@ export interface User {
   settings: UserSettings;
   roles?: string[];
 }
-
-export interface LoginUserForm {
-  phoneOrEmail: string;
-}
-
-export interface LoginUserDto {
-  email?: string;
-  phoneNumber?: string;
-  password: string;
-}

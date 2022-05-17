@@ -8,11 +8,14 @@ import {
 } from '@config';
 import { Debug } from './debug';
 import { HttpException } from '@/exceptions';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 const debug = Debug('mailer');
 
 type EmailCode = { email: string; code: string };
-export const emailCode = async (data: EmailCode) => {
+export const emailCode = async (
+  data: EmailCode,
+): Promise<SMTPTransport.SentMessageInfo> => {
   const { email, code } = data;
 
   const transporter = nodemailer.createTransport({
@@ -35,12 +38,11 @@ export const emailCode = async (data: EmailCode) => {
     html: `<b>${code}</b>`,
   };
 
-  return transporter.sendMail(mailOptions, function (err, info) {
-    if (err) {
-      throw new HttpException(500, err.message);
-    } else {
-      debug('sent:', info);
-      return info;
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    debug('sent:', info);
+    return Promise.resolve(info);
+  } catch (err) {
+    throw new HttpException(500, err.message);
+  }
 };

@@ -1,9 +1,10 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { authApi } from '../services';
 import type { User } from '../types';
 
 interface AuthState {
   token?: string;
-  user?: User;
+  userId?: User['id'];
   isAdmin?: boolean;
 }
 
@@ -15,18 +16,34 @@ export const authSlice = createSlice({
   reducers: {
     setAuth: (
       state,
-      action: PayloadAction<Pick<AuthState, 'token' | 'user'>>,
+      action: PayloadAction<Pick<AuthState, 'token'> & { user: User }>,
     ) => {
       const { token, user } = action.payload;
 
-      // TODO: Consider remove this. RTK query read token from redux.
       if (token) {
         localStorage.setItem('authtoken', token);
       }
 
       state.token = token;
-      state.user = user;
+      state.userId = user.id;
       state.isAdmin = user?.roles?.includes('admin');
     },
+  },
+
+  extraReducers: (builder) => {
+    // eslint-disable-next-line
+    builder.addMatcher(
+      authApi.endpoints.loginPhoneOrEmail.matchFulfilled,
+      (state, { payload }) => {
+        const { user, token } = payload;
+        console.debug('DEBUG: payload:', payload);
+        if (token) {
+          localStorage.setItem('authtoken', token);
+        }
+        state.token = token;
+        state.userId = user.id;
+        state.isAdmin = user?.roles?.includes('admin');
+      },
+    );
   },
 });

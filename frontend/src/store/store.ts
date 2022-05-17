@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { useAppSelector } from '.';
-import { authSlice } from './features';
+import { authSlice, userSlice } from './features';
 import { api } from './services';
 
 export { skipToken } from '@reduxjs/toolkit/query/react';
@@ -9,7 +9,7 @@ export { skipToken } from '@reduxjs/toolkit/query/react';
 export const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
-    // user: userSlice.reducer,
+    user: userSlice.reducer,
     [api.reducerPath]: api.reducer,
   },
 
@@ -21,4 +21,4 @@ setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export const selectUuid = () => useAppSelector((state) => state.auth.user.id);
+export const selectUuid = () => useAppSelector((state) => state.auth.userId);
