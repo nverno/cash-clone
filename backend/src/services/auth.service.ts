@@ -5,7 +5,7 @@ import { SECRET_KEY } from '@config';
 import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
 import { DataStoredInToken, TokenData } from '@interfaces';
-import { Debug, emailCode, isEmpty } from '@utils';
+import { Debug, emailCode, isEmpty } from '@utils'; // eslint-disable-line
 import UserService from './users.service';
 import prisma from '@/client';
 import { isEmail } from 'class-validator';
@@ -39,7 +39,8 @@ export class AuthService {
       throw new HttpException(400, 'Sending code by phone not supported');
 
     debug('generated login code:', code);
-    return emailCode({ email: phoneOrEmail, code });
+
+    // await emailCode({ email: phoneOrEmail, code });
   }
 
   // Check that given login code is valid for user
@@ -56,7 +57,7 @@ export class AuthService {
   /** Users can login by email or phone number */
   public async login(
     userData: LoginUserDto,
-  ): Promise<{ cookie: string; user: User }> {
+  ): Promise<{ token: TokenData; user: User }> {
     if (isEmpty(userData) || !(userData.password || userData.code))
       throw new HttpException(400, 'Missing login data');
 
@@ -80,9 +81,10 @@ export class AuthService {
     }
 
     const tokenData = this.createToken(user);
-    const cookie = this.createCookie(tokenData);
+    // const cookie = this.createCookie(tokenData);
 
-    return { cookie, user };
+    debug(`tokenData = ${tokenData}, user = ${JSON.stringify(user, null, 2)}`);
+    return { token: tokenData, user };
   }
 
   public async logout(userData: User): Promise<User> {

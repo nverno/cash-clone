@@ -2,117 +2,211 @@ import React, { FC } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
 import classnames from 'classnames';
-import { isEmpty } from 'lodash-es';
 import { isEmail } from 'class-validator';
-import { isPhoneNumber, splitPhoneNumber } from '../../utils';
-import { LoginUserForm } from '../../store';
+import { formatPhoneNumber, isPhoneNumber } from '../../utils';
+import {
+  useLoginPhoneOrEmailMutation,
+  useRequestLoginCodeMutation,
+} from '../../store';
+import { useNavigate } from 'react-router-dom';
 
 export interface LoginPageProps {}
 
+const steps = [
+  {
+    title: () => <>Sign in to Cash App</>,
+    invalid: () => <>Invalid email address or SMS number</>,
+    placeholder: 'Email or Mobile Number',
+    buttonText: 'Request Sign In Code',
+  },
+  {
+    title: (email: string) => (
+      <>
+        Cool! We emailed a code to{' '}
+        <span className='wrap-together'>{email}</span>
+      </>
+    ),
+    invalid: (email: string) => (
+      <>That doesn't look like the code we sent to {email}</>
+    ),
+    placeholder: 'Confirmation Code',
+    buttonText: 'Sign In',
+  },
+];
+
 const LoginPage: FC<LoginPageProps> = () => {
-  const [stepTitle, setStepTitle] = React.useState('Sign in to Cash App');
+  const [stepNum, setStepNum] = React.useState(0);
+  const [email, setEmail] = React.useState('');
+  const [code, setCode] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [text, setText] = React.useState('');
   const [showSubmit, setShowSubmit] = React.useState(false);
   const [isInvalid, setIsInvalid] = React.useState(false);
+  const [requestLoginCode] = useRequestLoginCodeMutation();
+  const [loginPhoneOrEmail] = useLoginPhoneOrEmailMutation();
+  const navigate = useNavigate();
 
-  // Format phone numbers
-  const handleChange = useMemoizedFn((txt: string) => {
-    // '+' can precede country code, allow '-' and '()' interspersed
-    txt = txt.replaceAll(/[+ \t-()]/g, '');
-    if (isEmpty(txt)) {
-      setStepTitle('Sign in to Cash App');
-    } else if (isEmail(txt)) {
-      !showSubmit && setShowSubmit(true);
-    } else if (/^[0-9]{4,}/.test(txt)) {
-      txt = txt.replaceAll(/[+-]/g, '');
-      const parts = splitPhoneNumber(txt);
-      if (isPhoneNumber(txt)) {
+  /**
+   * Format phone numbers (not comprehensive)
+   * '+' can precede country code, allow '-' and '()' interspersed
+   */
+  const handleChange = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let txt = e.target.value.replaceAll(/[+ \t()-]/g, '');
+
+      if (isEmail(txt)) {
         !showSubmit && setShowSubmit(true);
+      } else if (txt.length > 4 && /^[0-9]+$/.test(txt)) {
+        txt = txt.slice(0, txt[0] === '1' ? 11 : 10);
+        if (isPhoneNumber(txt)) !showSubmit && setShowSubmit(true);
+        else showSubmit && setShowSubmit(false);
+        txt = formatPhoneNumber(txt);
       } else {
         showSubmit && setShowSubmit(false);
       }
-      txt = parts[0] ? String(parts[0]) + ' ' : '';
-      if (parts[1]) txt += '(' + parts[1] + ')';
-      if (parts[2]) txt += ' ' + parts[2];
-      if (parts[3]) txt += '-' + parts[3];
-    } else {
-      showSubmit && setShowSubmit(false);
-    }
-    setIsInvalid(false);
-    setText(txt);
-  });
+      isInvalid && setIsInvalid(false);
+      setEmail(txt);
+    },
+  );
 
-  const handleEnter = async (e) => {
-    e.preventDefault();
-    try {
-      if (!showSubmit) throw new Error('invalid');
-      await handleSubmit({ phoneOrEmail: text });
-    } catch (err) {
-      console.error(err.message);
-      setStepTitle('Invalid email address of SMS number');
-      setIsInvalid(true);
-    }
-  };
+  const handleChangeCode = useMemoizedFn(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const txt = e.target.value.replaceAll('-', '').slice(0, 12);
+      console.debug('DEBUG: txt:', txt);
+      let res = '';
+      for (let i = 0; i < txt.length; i += 3) {
+        if (res.length) res += '-';
+        res += txt.slice(i, i + 3);
+      }
+      console.debug('DEBUG: res:', res);
+      setCode(res);
+    },
+  );
 
-  const handleSubmit = useMemoizedFn(async (vals: LoginUserForm) => {
-    const { phoneOrEmail } = vals;
+  const handleEnter = useMemoizedFn(
+    async (e: React.MouseEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      try {
+        if (!showSubmit) throw new Error('invalid');
+        await handleSubmit();
+      } catch (err) {
+        console.error(err.message);
+        setIsInvalid(true);
+      }
+    },
+  );
+
+  const handleSubmit = useMemoizedFn(async () => {
     setIsSubmitting(true);
     try {
-      /* const txt = undefined; */
-      console.debug('DEBUG: phoneOrEmail:', phoneOrEmail);
+      if (stepNum === 0) {
+        console.debug('DEBUG: email:', email);
+        await requestLoginCode({ phoneOrEmail: email }).unwrap();
+      } else {
+        console.debug('DEBUG: code:', code);
+        await loginPhoneOrEmail({
+          phoneOrEmail: email,
+          code: code.replaceAll('-', ''),
+        }).unwrap();
+        navigate('account');
+      }
+      setStepNum(stepNum + 1);
+      isInvalid && setIsInvalid(false);
     } catch (err) {
       console.error(err.message);
+      !isInvalid && setIsInvalid(true);
     } finally {
       setIsSubmitting(false);
     }
   });
 
+  const PhoneOrEmailInput = () => (
+    <div
+      className={classnames('field fk-field-container', {
+        'is-invalid': isInvalid,
+      })}
+    >
+      <input
+        type='text'
+        id='phoneOrNumber'
+        name='phoneOrNumber'
+        aria-label={steps[stepNum].placeholder}
+        autoComplete='off'
+        spellCheck='false'
+        autoCapitalize='none'
+        autoFocus
+        className='!rounded mb-[16px] text-center ember-text-field text-black'
+        placeholder={steps[stepNum].placeholder}
+        onChange={handleChange}
+        value={email}
+      />
+    </div>
+  );
+
+  const CodeInput = () => (
+    <div className='field-container'>
+      <div className='field'>
+        <div className='field fk-field-container'>
+          <input
+            type='tel'
+            id='code'
+            name='code'
+            aria-label={steps[stepNum].placeholder}
+            autoComplete='off'
+            spellCheck='false'
+            autoCapitalize='off'
+            autoFocus
+            pattern='\d*'
+            className='!rounded mb-[16px] text-center ember-text-field text-black'
+            placeholder={steps[stepNum].placeholder}
+            onChange={handleChangeCode}
+            value={code}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className='!h-[100vh] application-cash'>
       <section className='!h-full layout-login flex-container pad'>
         <div className='login-container flex-container flex-v-center flex-fill'>
-          <h1 className='step-title flex-static'>{stepTitle}</h1>
-          <form className='w-full'>
-            <div
-              className={classnames('field fk-field-container', {
-                'is-invalid': isInvalid,
-              })}
-            >
-              <input
-                type='text'
-                id='phoneOrNumber'
-                name='phoneOrNumber'
-                aria-label='Email or Mobile Number'
-                autoComplete='off'
-                spellCheck='false'
-                autoCapitalize='none'
-                className='!rounded mb-[16px] text-center ember-text-field text-black'
-                placeholder='Email or Mobile Number'
-                onChange={(e) => handleChange(e.target.value)}
-                value={text}
-              />
-            </div>
+          <h1 className='step-title flex-static'>
+            {isInvalid
+              ? steps[stepNum].invalid(email)
+              : steps[stepNum].title(email)}
+          </h1>
+          <form className='w-full login-form'>
+            {stepNum === 0 ? <PhoneOrEmailInput /> : <CodeInput />}
 
             <div
-              className={classnames('alias-submit fade-in immediate', {
-                show: showSubmit,
-              })}
+              className={classnames(
+                'alias-submit fade-in immediate mt-[14px]',
+                {
+                  show: stepNum > 0 || showSubmit,
+                },
+              )}
             >
               <div className='cta submit-button-component submit-button-with-spinner'>
                 <Button
                   htmlType='submit'
-                  onClick={handleEnter}
+                  onSubmit={handleSubmit}
+                  onClick={stepNum > 0 ? handleSubmit : handleEnter}
                   loading={isSubmitting}
-                  aria-label='Request Sign In Code'
+                  aria-label={steps[stepNum].buttonText}
                   className='button theme-button button--round theme-button'
                 >
-                  Request Sign In Code
+                  {steps[stepNum].buttonText}
                 </Button>
                 <div className='spinner-container'></div>
               </div>
             </div>
           </form>
+
+          {stepNum > 0 && (
+            <a href='#' className='login-help-link fade-in immediate show'>
+              Help
+            </a>
+          )}
         </div>
       </section>
     </div>

@@ -4,7 +4,7 @@ import {
   formatBalance,
   formatInitial,
   formatName,
-  formatPhoneNumber,
+  formatUserPhoneNumber,
 } from '../../utils';
 
 export interface SettingsProps extends DefaultProps {}
@@ -123,7 +123,7 @@ export const Settings: FC<SettingsProps> = (props) => {
           <h3 className='account-module-header'>Your Info</h3>
           <div className='account-module-container aliases'>
             <div className='settings-display-field truncate-text phone-number'>
-              {formatPhoneNumber(user)}
+              {formatUserPhoneNumber(user)}
               <a className='delete-button'></a>
             </div>
             <div className='settings-display-field truncate-text email-address'>
