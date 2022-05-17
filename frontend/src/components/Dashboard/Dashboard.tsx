@@ -6,6 +6,10 @@ import { DefaultProps } from '../../App';
 export interface DashboardProps extends DefaultProps {}
 
 export const Dashboard: FC<DashboardProps> = (props) => {
+  React.useLayoutEffect(() => {
+    document.body.classList.add('theme-light-gray');
+    document.body.classList.remove('theme-green');
+  }, []);
   return (
     <div className='account-new'>
       <div className='layout-account-new flex-container'>

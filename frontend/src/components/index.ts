@@ -5,3 +5,4 @@ export * from './Activity';
 export * from './BankAccount';
 export * from './Login';
 export * from './Landing';
+export * from './Payment';

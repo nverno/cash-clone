@@ -43,6 +43,7 @@ const Sidebar: FC<SidebarProps> = (props) => {
     return (
       <Link
         to={`/account/${type}`}
+        title={title}
         onClick={() => setActiveLink(type)}
         className={classnames('nav-item', type, {
           active: activeLink === type,
@@ -54,7 +55,7 @@ const Sidebar: FC<SidebarProps> = (props) => {
     );
   };
   return (
-    <div className='!h-full account-navigation-bar flex-container theme-bg theme-green'>
+    <div className='!h-full account-navigation-bar flex-container'>
       <SidebarProfile user={user} />
 
       <nav className='nav-items'>

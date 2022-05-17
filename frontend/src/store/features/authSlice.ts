@@ -45,9 +45,9 @@ export const authSlice = createSlice({
       },
     );
 
-    builder.addMatcher(
-      authApi.endpoints.logout.matchFulfilled,
-      () => initialState,
-    );
+    builder.addMatcher(authApi.endpoints.logout.matchFulfilled, () => {
+      localStorage.removeItem('authtoken');
+      return initialState;
+    });
   },
 });

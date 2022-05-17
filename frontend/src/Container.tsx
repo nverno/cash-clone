@@ -10,12 +10,13 @@ import {
 
 // import { fakeUser } from './mocks';
 import LoginPage from './components/Login/LoginPage';
+import PaymentPage from './components/Payment/PaymentPage';
 import { useAppSelector } from './store';
 
 export interface ContainerProps {}
 
 const Container: FC<ContainerProps> = () => {
-  const loggedIn = useAppSelector((state) => state.auth?.token);
+  const loggedIn = useAppSelector((state) => state.auth?.token); // ?? localStorage.getItem('authtoken');
   const user = useAppSelector((state) => state.user);
 
   const displayLoggedOut = () => (
@@ -41,6 +42,8 @@ const Container: FC<ContainerProps> = () => {
         <Route path='mycash' element={<MyCash user={user} />} />
         <Route path='settings' element={<Settings user={user} />} />
       </Route>
+
+      <Route path='/:cashTag' element={<PaymentPage user={user} />} />
 
       <Route path='*' element={<Navigate replace to='/account/activity' />} />
     </Routes>

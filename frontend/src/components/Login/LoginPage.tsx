@@ -46,6 +46,11 @@ const LoginPage: FC<LoginPageProps> = () => {
   const [loginPhoneOrEmail] = useLoginPhoneOrEmailMutation();
   const navigate = useNavigate();
 
+  React.useLayoutEffect(() => {
+    document.body.classList.remove('theme-light-gray');
+    document.body.classList.add('theme-green');
+  }, []);
+
   /**
    * Format phone numbers (not comprehensive)
    * '+' can precede country code, allow '-' and '()' interspersed

@@ -32,26 +32,26 @@ export const MyCash: FC<MyCashProps> = (props) => {
             <BankDepositCard key={idx} account={account} />
           ))}
         </div>
-      </div>
 
-      <div className='limits-overview'>
-        <h3 className='account-module-header'>CASH LIMITS</h3>
-        <div className='limit-types flex-container'>
-          <div className='limit-type-section flex-v-center'>
-            <h4 className='limit-type-title'>Send</h4>
-            <p className='limit-type-text'>$2,500 per Week</p>
-          </div>
-          <div className='limit-type-section flex-v-center'>
-            <h4 className='limit-type-title'>Receive</h4>
-            <p className='limit-type-text'>Unlimited</p>
-          </div>
-          <div className='limit-type-section flex-v-center'>
-            <h4 className='limit-type-title'>Add Cash</h4>
-            <p className='limit-type-text'>$2,500 per Week</p>
-          </div>
-          <div className='limit-type-section flex-v-center'>
-            <h4 className='limit-type-title'>Cash Out</h4>
-            <p className='limit-type-text'>$25,000 per Week</p>
+        <div className='limits-overview'>
+          <h3 className='account-module-header'>CASH LIMITS</h3>
+          <div className='limit-types flex-container'>
+            <div className='limit-type-section flex-v-center'>
+              <h4 className='limit-type-title'>Send</h4>
+              <p className='limit-type-text'>$2,500 per Week</p>
+            </div>
+            <div className='limit-type-section flex-v-center'>
+              <h4 className='limit-type-title'>Receive</h4>
+              <p className='limit-type-text'>Unlimited</p>
+            </div>
+            <div className='limit-type-section flex-v-center'>
+              <h4 className='limit-type-title'>Add Cash</h4>
+              <p className='limit-type-text'>$2,500 per Week</p>
+            </div>
+            <div className='limit-type-section flex-v-center'>
+              <h4 className='limit-type-title'>Cash Out</h4>
+              <p className='limit-type-text'>$25,000 per Week</p>
+            </div>
           </div>
         </div>
       </div>
