@@ -13,6 +13,8 @@ services:
       - backend
   server:
     image: registry.heroku.com/caashapp/caashapp-service:latest
+    # env_file:
+    #   - ${ENV_FILE:-.env}
     build:
       context: ./
       target: development-build-stage

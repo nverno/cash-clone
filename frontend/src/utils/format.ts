@@ -1,20 +1,32 @@
 import { capitalize } from 'lodash-es';
 import { User, BankAccount, Card } from '../store';
 
-export const formatName = (user: User) => {
-  return `${capitalize(user.firstName)} ${capitalize(user.lastName)}`;
+export const formatName = (user: Partial<User>) => {
+  return user?.name?.split(' ').map(capitalize).join(' ');
 };
 
-export const formatBalance = (user: User) => {
-  return `$${user.balance === 0 ? '0.00' : user.balance}`;
+export const formatDollars = (n: number) => {
+  const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `$${formatter.format(n ?? 0)}`;
 };
 
-export const formatUsername = (user: User) => {
+export const formatBalance = (user: Partial<User>) => {
+  return formatDollars(user.balance);
+};
+
+export const formatCashTag = (user: Partial<User>) => {
+  return `$${user.cashTag}`;
+};
+
+export const formatUsername = (user: Partial<User>) => {
   return user?.username ?? formatName(user);
 };
 
-export const formatInitial = (user: User) => {
-  return user.firstName[0].toLocaleUpperCase();
+export const formatInitial = (user: Partial<User>) => {
+  return user?.name[0].toLocaleUpperCase();
 };
 
 export const formatCreditCard = (show: boolean, card?: Card) => {
@@ -22,8 +34,7 @@ export const formatCreditCard = (show: boolean, card?: Card) => {
   if (!card) return parts;
   if (!show) parts[3] = card.cardNumber.slice(12);
   else {
-    for (let i = 0; i < 4; i++)
-      parts[i] = card.cardNumber.slice(4 * i, 4 * i + 4);
+    for (let i = 0; i < 4; i++) parts[i] = card.cardNumber.slice(4 * i, 4 * i + 4);
   }
   return parts;
 };

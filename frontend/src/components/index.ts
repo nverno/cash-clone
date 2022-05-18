@@ -6,3 +6,6 @@ export * from './BankAccount';
 export * from './Login';
 export * from './Landing';
 export * from './Payment';
+export * from './User';
+export * from './Error';
+export * from './TransactionModal';

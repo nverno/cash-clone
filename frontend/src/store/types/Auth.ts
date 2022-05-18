@@ -1,8 +1,9 @@
 import { User } from './User';
 
 export interface LoginUserForm {
-  phoneOrEmail: string;
+  identifier: string;
   code?: string;
+  password?: string;
 }
 
 export interface LoginUserDto {

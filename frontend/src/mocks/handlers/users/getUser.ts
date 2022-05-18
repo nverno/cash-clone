@@ -1,8 +1,7 @@
 import { User } from '../../../store';
 
 export const fakeUser: User = {
-  firstName: 'Fake',
-  lastName: 'User',
+  name: 'Fake User',
   username: 'Fake User',
   cashTag: '$FakeUser',
   phoneNumber: ['1234567890'],

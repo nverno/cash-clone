@@ -7,6 +7,7 @@ import hpp from 'hpp';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+// eslint-disable-next-line
 import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces';
 import { errorMiddleware } from '@middlewares';
@@ -44,7 +45,12 @@ class App {
   private initializeMiddlewares() {
     // logging
     this.app.use(morgan(LOG_FORMAT, { stream }));
-    this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
+    this.app.use(
+      cors({
+        origin: true, // ORIGIN
+        credentials: CREDENTIALS,
+      }),
+    );
     // protect against HTTP parameter pollution attacks
     this.app.use(hpp());
     // set security HTTP headers

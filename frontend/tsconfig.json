@@ -12,6 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "jsx": "react"
+    "jsx": "react",
+    "types": ["vite/client"],
   }
 }

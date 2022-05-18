@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  web:
+    image: registry.heroku.com/caashapp/caashapp:latest
+    env_file:
+      - ${ENV_FILE:-.env}
+    build:
+      context: ./
+      target: production-build-stage
+      dockerfile: Dockerfile
+    container_name: caashapp
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+
+volumes:
+  data:
+    driver: local

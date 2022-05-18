@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { authApi } from '../services';
+import { authApi, usersApi } from '../services';
 import { User } from '../types';
 
 const initialState: User = {
-  firstName: null,
-  lastName: null,
+  name: null,
   cashTag: null,
   balance: null,
   email: null,
@@ -18,7 +17,7 @@ const initialState: User = {
   username: null,
 };
 
-export const userSlice = createSlice({
+export const usersSlice = createSlice({
   name: 'user',
   initialState,
 
@@ -31,9 +30,16 @@ export const userSlice = createSlice({
 
   extraReducers: (builder) => {
     builder.addMatcher(
-      authApi.endpoints.loginPhoneOrEmail.matchFulfilled,
+      authApi.endpoints.login.matchFulfilled,
       (state, { payload }) => {
         Object.assign(state, payload.user);
+      },
+    );
+
+    builder.addMatcher(
+      usersApi.endpoints.getUserById.matchFulfilled,
+      (state, { payload }) => {
+        Object.assign(state, payload);
       },
     );
   },

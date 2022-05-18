@@ -1,1 +1,1 @@
-export * from './MyCash';
+export * from './MyCashPage';

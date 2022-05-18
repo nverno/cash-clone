@@ -230,7 +230,7 @@ main {
 }
 @media (min-width: 1280px) {
   [data-chapter],
-[data-footer] {
+  [data-footer] {
     grid-template-columns: [full-start] 1fr [layout-start] 124px [content-start] 980px [content-end] 124px [layout-end] 1fr [full-end];
   }
 }
@@ -242,7 +242,7 @@ main {
 }
 @media (min-width: 1280px) {
   [data-chapter] [data-chapter-logo],
-[data-footer] [data-chapter-logo] {
+  [data-footer] [data-chapter-logo] {
     grid-column: layout;
     width: 160px;
     justify-self: start;
@@ -250,7 +250,7 @@ main {
 }
 @media (min-width: 1280px) {
   [data-chapter] [data-chapter-eyeball],
-[data-footer] [data-chapter-eyeball] {
+  [data-footer] [data-chapter-eyeball] {
     grid-row: 1;
     justify-self: center;
   }
@@ -269,7 +269,7 @@ main {
 }
 @media (min-width: 1280px) {
   [data-chapter] [data-chapter-download],
-[data-footer] [data-chapter-download] {
+  [data-footer] [data-chapter-download] {
     display: none;
     grid-row: 1;
     grid-column: layout;

@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken';
 import { User, VerificationCode } from '@prisma/client';
 import { CreateUserDto, LoginUserDto } from '@dtos';
 import { HttpException } from '@exceptions';
-import { DataStoredInToken, TokenData } from '@interfaces';
+import { DataStoredInToken, TokenData, UserResult } from '@interfaces';
 import { Debug, sendEmail, sendSMS, isEmpty, isSmsNumber } from '@utils'; // eslint-disable-line
 import UserService from './users.service';
 import prisma from '@/client';
@@ -16,17 +16,17 @@ export class AuthService {
   public codes = prisma.verificationCode;
   public userService = new UserService();
 
-  public async signup(userData: CreateUserDto): Promise<User> {
+  public async signup(userData: CreateUserDto): Promise<UserResult> {
     return this.userService.createUser(userData);
   }
 
   // Generate login code for user
   public async generateLoginCode(
-    userData: Pick<LoginUserDto, 'phoneOrEmail'>,
+    userData: Pick<LoginUserDto, 'identifier'>,
   ): Promise<void> {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing login data');
-    const { phoneOrEmail } = userData;
-    const user: User = await this.userService.findUser({ phoneOrEmail });
+    const { identifier } = userData;
+    const user = await this.userService.findUser({ identifier });
     const code = String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
     await this.codes.upsert({
       where: { userId: user.id },
@@ -35,34 +35,26 @@ export class AuthService {
     });
 
     // Send code
-    if (isEmail(phoneOrEmail)) {
+    if (isEmail(identifier)) {
       if (MAILER_ENABLED) {
         debug('skipping sending email');
-        // await sendEmail({ email: phoneOrEmail, code });
+        // await sendEmail({ email: identifier, code });
       } else
-        throw new HttpException(
-          500,
-          `Contact by email not currently supported`,
-        );
-    } else if (isSmsNumber(phoneOrEmail)) {
+        throw new HttpException(500, `Contact by email not currently supported`);
+    } else if (isSmsNumber(identifier)) {
       if (SMS_ENABLED) {
-        await sendSMS({ phoneNo: phoneOrEmail, code });
+        await sendSMS({ phoneNo: identifier, code });
         debug('sent sms');
-      } else
-        throw new HttpException(500, 'Contact by SMS not currently supported');
-    } else
-      throw new HttpException(
-        500,
-        `Unrecognized phoneOrEmail: ${phoneOrEmail}`,
-      );
+      } else throw new HttpException(500, 'Contact by SMS not currently supported');
+    } else throw new HttpException(500, `Unrecognized identifier: ${identifier}`);
 
     debug('generated login code:', code);
   }
 
-  private async getUser(userData: LoginUserDto): Promise<User> {
+  private async getUser(userData: LoginUserDto): Promise<UserResult> {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing login data');
-    const { phoneOrEmail } = userData;
-    return this.userService.findUser({ phoneOrEmail });
+    const { identifier } = userData;
+    return this.userService.findUser({ identifier });
   }
 
   // testing
@@ -75,8 +67,10 @@ export class AuthService {
   public async checkLoginCode(userData: LoginUserDto): Promise<User> {
     if (isEmpty(userData) || !userData.code)
       throw new HttpException(400, 'Missing login data');
-    const { phoneOrEmail, code } = userData;
-    const user = await this.userService.findUser({ phoneOrEmail });
+    const { identifier, code } = userData;
+    const user = (await this.userService.findUser({ identifier })) as User & {
+      loginCode;
+    };
     if (user.loginCode.code !== code)
       throw new HttpException(400, 'Invalid login code');
     return user;
@@ -85,18 +79,17 @@ export class AuthService {
   /** Users can login by email or phone number */
   public async login(
     userData: LoginUserDto,
-  ): Promise<{ token: TokenData; user: User }> {
+  ): Promise<{ token: TokenData; user: UserResult }> {
     if (isEmpty(userData) || !(userData.password || userData.code))
       throw new HttpException(400, 'Missing login data');
 
-    const { phoneOrEmail, password, code } = userData;
-    const user = await this.userService.findUser({ phoneOrEmail });
+    const { identifier, password, code } = userData;
+    const user = (await this.userService.findUser({ identifier })) as User & {
+      loginCode;
+    };
 
     if (password) {
-      const isPasswordMatching: boolean = await compare(
-        password,
-        user.password,
-      );
+      const isPasswordMatching: boolean = await compare(password, user.password);
       if (!isPasswordMatching) throw new HttpException(400, 'Invalid password');
     } else if (!user?.loginCode?.code.length || user.loginCode.code !== code) {
       throw new HttpException(400, `Invalid login code: ${code}`);
@@ -116,11 +109,11 @@ export class AuthService {
     return { token: tokenData, user };
   }
 
-  public async logout(userData: User): Promise<User> {
+  public async logout(userData: User): Promise<UserResult> {
     if (isEmpty(userData)) throw new HttpException(400, 'Missing logout data');
 
     // XXX: should blacklist the JWT token
-    const user: User = await this.userService.findUserById(userData.id);
+    const user = await this.userService.findUserById(userData.id);
     if (!user) throw new HttpException(400, 'User data not found');
 
     return user;
@@ -129,7 +122,7 @@ export class AuthService {
   public createToken(user: User): TokenData {
     const dataStoredInToken: DataStoredInToken = { id: user.id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 60 * 60;
+    const expiresIn: number = 60 * 60 * 24;
 
     return {
       expiresIn,

@@ -1,23 +1,25 @@
 const fs = require('fs');
-const path = require('path');
+// const _path = require('path');
 const killPort = require('kill-port');
 const colors = require('picocolors');
 const { defineConfig, createLogger, loadEnv } = require('vite');
 const { esbuildCommonjs } = require('@originjs/vite-plugin-commonjs');
 const react = require('@vitejs/plugin-react');
 const dts = require('vite-dts').default;
+const reactSvgPlugin = require('vite-plugin-react-svg');
+const PORT = process.env.PORT || 3000;
 
-const getPkg = () => {
-  const pkg = require('./package.json');
+// const getPkg = () => {
+//   const pkg = require('./package.json');
 
-  pkg.main = pkg.main || 'dist/index.js';
-  pkg.module = pkg.module || 'dist/index.es.js';
-  pkg.style = pkg.style || 'dist/index.css';
-  pkg.types = pkg.types || 'dist/index.d.ts';
-  pkg.source = pkg.source || 'src/App.tsx';
+//   pkg.main = pkg.main || 'dist/index.js';
+//   pkg.module = pkg.module || 'dist/index.es.js';
+//   pkg.style = pkg.style || 'dist/index.css';
+//   pkg.types = pkg.types || 'dist/index.d.ts';
+//   pkg.source = pkg.source || 'src/App.tsx';
 
-  return pkg;
-};
+//   return pkg;
+// };
 
 const logger = createLogger('info', { allowClearScreen: false });
 
@@ -68,9 +70,7 @@ const ensureTailwindConfig = () => {
   const postcssConfigFilename = 'postcss.config.js';
 
   if (!fs.existsSync(tailwindConfigFilename)) {
-    const coloredConfigFileName = colors.cyan(
-      colors.bold(tailwindConfigFilename),
-    );
+    const coloredConfigFileName = colors.cyan(colors.bold(tailwindConfigFilename));
     logger.info(`Generate ./${coloredConfigFileName}`, {
       timestamp: true,
     });
@@ -83,9 +83,7 @@ module.exports = { presets: [require('${name}/tailwind.config')] }`,
   }
 
   if (!fs.existsSync(postcssConfigFilename)) {
-    const coloredConfigFileName = colors.cyan(
-      colors.bold(postcssConfigFilename),
-    );
+    const coloredConfigFileName = colors.cyan(colors.bold(postcssConfigFilename));
     logger.info(`Generate ./${coloredConfigFileName}`, {
       timestamp: true,
     });
@@ -112,10 +110,10 @@ const createConfig = (options = {}) => {
 
   return defineConfig(async (env) => {
     if (env.command === 'serve') {
-      await killPort(3000);
+      await killPort(PORT);
     }
 
-    const pkg = getPkg();
+    // const _pkg = getPkg();
 
     if (tailwindcss) {
       ensureTailwindConfig();
@@ -147,25 +145,25 @@ const createConfig = (options = {}) => {
         ],
       },
 
-      plugins: [react(), dts()],
+      plugins: [react(), dts(), reactSvgPlugin()],
 
       build: {
-        lib: {
-          entry: path.resolve(pkg.source),
-          formats: ['cjs', 'es'],
-          fileName: (format) =>
-            path.basename({ cjs: pkg.main, es: pkg.module }[format]),
-        },
+        // lib: {
+        //   entry: _path.resolve(pkg.source),
+        //   formats: ['cjs', 'es'],
+        //   fileName: (format) =>
+        //     _path.basename({ cjs: pkg.main, es: pkg.module }[format]),
+        // },
         emptyOutDir: !process.argv.includes('--watch'),
         minify: false,
         sourcemap: true,
-        rollupOptions: {
-          external: (id) => !id.startsWith('.') && !path.isAbsolute(id),
-          output: {
-            assetFileNames: ({ name }) =>
-              name === 'style.css' ? path.basename(pkg.style) : name,
-          },
-        },
+        // rollupOptions: {
+        //   external: (id) => !id.startsWith('.') && !_path.isAbsolute(id),
+        //   output: {
+        //     assetFileNames: ({ name }) =>
+        //       name === 'style.css' ? _path.basename(pkg.style) : name,
+        //   },
+        // },
       },
 
       esbuild: {
@@ -187,7 +185,7 @@ const createConfig = (options = {}) => {
               setup(build) {
                 build.onLoad({ filter: /src\/.+\.js$/ }, async (args) => ({
                   loader: 'tsx',
-                  contents: fs.readFileSync(args.path, 'utf8'),
+                  contents: fs.readFileSync(args._path, 'utf8'),
                 }));
               },
             },
@@ -197,6 +195,7 @@ const createConfig = (options = {}) => {
 
       server: {
         // https: await getHttps(env),
+        port: PORT,
         strictPort: true,
       },
     };
@@ -205,4 +204,7 @@ const createConfig = (options = {}) => {
   });
 };
 
-export default createConfig({ base: '/', tailwindcss: true });
+export default createConfig({
+  base: '/cash-clone/',
+  tailwindcss: true,
+});

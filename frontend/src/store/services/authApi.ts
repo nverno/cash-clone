@@ -14,8 +14,8 @@ export const authApi = api.injectEndpoints({
       }),
     }),
 
-    // login with phone/email + login code
-    loginPhoneOrEmail: builder.mutation<LoginResponse, LoginUserForm>({
+    // login with phone/email + login code or phone/email + password
+    login: builder.mutation<LoginResponse, LoginUserForm>({
       query: (body) => ({
         url: '/login',
         method: 'POST',
@@ -36,6 +36,6 @@ export const authApi = api.injectEndpoints({
 
 export const {
   useRequestLoginCodeMutation,
-  useLoginPhoneOrEmailMutation,
+  useLoginMutation,
   useLogoutMutation,
 } = authApi;

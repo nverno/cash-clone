@@ -15,10 +15,7 @@ export class CreateUserDto {
   public password: string;
 
   @IsString()
-  public firstName: string;
-
-  @IsString()
-  public lastName: string;
+  public name: string;
 
   @IsString()
   public pinNumber: string;
@@ -34,7 +31,7 @@ export class CreateUserDto {
 
 export class LoginUserDto {
   @IsString()
-  public phoneOrEmail: string;
+  public identifier: string;
 
   @IsOptional()
   @IsString()

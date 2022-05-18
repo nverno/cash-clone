@@ -4,9 +4,9 @@ import { DefaultProps } from '../../App';
 import MyCard from './MyCard';
 import BankDepositCard from '../BankAccount/BankDepositCard';
 
-export interface MyCashProps extends DefaultProps {}
+export interface MyCashPageProps extends DefaultProps {}
 
-export const MyCash: FC<MyCashProps> = (props) => {
+export const MyCashPage: FC<MyCashPageProps> = (props) => {
   const { user } = props;
   return (
     <section className='flex-container flex-fill layout-mycash'>
@@ -59,4 +59,4 @@ export const MyCash: FC<MyCashProps> = (props) => {
   );
 };
 
-export default MyCash;
+export default MyCashPage;

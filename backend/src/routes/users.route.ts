@@ -18,6 +18,10 @@ export class UsersRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.usersController.getUsers);
+    this.router.get(
+      `${this.path}/by-cashtag/:cashTag`,
+      this.usersController.getUserByCashTag,
+    );
     this.router.get(`${this.path}/${userId}`, this.usersController.getUserById);
 
     this.router.post(
@@ -32,10 +36,7 @@ export class UsersRoute implements Routes {
       this.usersController.updateUser,
     );
 
-    this.router.delete(
-      `${this.path}/${userId}`,
-      this.usersController.deleteUser,
-    );
+    this.router.delete(`${this.path}/${userId}`, this.usersController.deleteUser);
   }
 }
 

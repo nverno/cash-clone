@@ -5,7 +5,9 @@ import { DefaultProps } from '../../App';
 import { useLogoutMutation } from '../../store';
 import SidebarProfile from './SidebarProfile';
 
-export interface SidebarProps extends DefaultProps {}
+export interface SidebarProps extends DefaultProps {
+  showModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 type SidebarLinkType = 'activity' | 'mycash' | 'settings';
 
@@ -16,7 +18,7 @@ interface SidebarLink {
 }
 
 const Sidebar: FC<SidebarProps> = (props) => {
-  const { user } = props;
+  const { user, showModal } = props;
   const location = useLocation();
   const [activeLink, setActiveLink] =
     React.useState<SidebarLinkType>('activity');
@@ -137,10 +139,10 @@ const Sidebar: FC<SidebarProps> = (props) => {
           <span className='nav-item-label'>Sign Out</span>
         </a>
         <a
-          href='#'
+          onClick={() => showModal(true)}
           data-link-label='Navbar Create Payment'
           title='New'
-          className='nav-item create-payment'
+          className='nav-item create-payment cursor-pointer'
         >
           <span className='button-text'>New</span>
         </a>

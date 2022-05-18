@@ -1,52 +1,50 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { authApi } from '../services';
-import type { User } from '../types';
+import type { LoginResponse, User } from '../types';
 
 interface AuthState {
-  token?: string;
+  token?: LoginResponse['token'];
   userId?: User['id'];
-  isAdmin?: boolean;
 }
 
 const initialState: AuthState = {};
+
+const setAuth = (state: AuthState, action: PayloadAction<LoginResponse>) => {
+  const { token, user } = action.payload;
+  state.token = token;
+  state.userId = user.id;
+
+  localStorage.setItem(
+    'auth',
+    JSON.stringify({
+      token,
+      user: { id: user.id },
+    }),
+  );
+};
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuth: (
-      state,
-      action: PayloadAction<Pick<AuthState, 'token'> & { user: User }>,
-    ) => {
-      const { token, user } = action.payload;
-
-      if (token) {
-        localStorage.setItem('authtoken', token);
-      }
-
-      state.token = token;
-      state.userId = user.id;
-      state.isAdmin = user?.roles?.includes('admin');
+    setAuth,
+    unsetAuth: () => {
+      localStorage.removeItem('auth');
+      return initialState;
     },
   },
 
   extraReducers: (builder) => {
     // eslint-disable-next-line
-    builder.addMatcher(
-      authApi.endpoints.loginPhoneOrEmail.matchFulfilled,
-      (state, { payload }) => {
-        const { user, token } = payload;
-        if (token) {
-          localStorage.setItem('authtoken', token.token);
-        }
-        state.token = token.token;
-        state.userId = user.id;
-        state.isAdmin = user?.roles?.includes('admin');
-      },
-    );
+    builder.addMatcher(authApi.endpoints.login.matchFulfilled, setAuth);
 
     builder.addMatcher(authApi.endpoints.logout.matchFulfilled, () => {
-      localStorage.removeItem('authtoken');
+      localStorage.removeItem('auth');
+      return initialState;
+    });
+
+    builder.addMatcher(authApi.endpoints.logout.matchRejected, () => {
+      localStorage.removeItem('auth');
       return initialState;
     });
   },

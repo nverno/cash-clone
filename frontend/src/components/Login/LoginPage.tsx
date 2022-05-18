@@ -1,14 +1,12 @@
 import React, { FC } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import { Button } from 'antd';
 import classnames from 'classnames';
 import { isEmail } from 'class-validator';
 import { formatPhoneNumber, isPhoneNumber } from '../../utils';
-import {
-  useLoginPhoneOrEmailMutation,
-  useRequestLoginCodeMutation,
-} from '../../store';
-import { useNavigate } from 'react-router-dom';
+import { useLoginMutation, useRequestLoginCodeMutation } from '../../store';
+import { useTheme } from '../../hooks';
+import { useLocation, useNavigate } from 'react-router-dom';
+import TestLogin from './TestLogin';
 
 export interface LoginPageProps {}
 
@@ -35,44 +33,41 @@ const steps = [
 
 const cleanPhoneOrEmail = (txt: string) => txt.replaceAll(/[+ \t()-]/g, '');
 
-const LoginPage: FC<LoginPageProps> = () => {
+export const LoginPage: FC<LoginPageProps> = () => {
   const [stepNum, setStepNum] = React.useState(0);
   const [email, setEmail] = React.useState('');
   const [code, setCode] = React.useState('');
+  // eslint-disable-next-line
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showSubmit, setShowSubmit] = React.useState(false);
   const [isInvalid, setIsInvalid] = React.useState(false);
   const [requestLoginCode] = useRequestLoginCodeMutation();
-  const [loginPhoneOrEmail] = useLoginPhoneOrEmailMutation();
+  const [loginPhoneOrEmail] = useLoginMutation();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  React.useLayoutEffect(() => {
-    document.body.classList.remove('theme-light-gray');
-    document.body.classList.add('theme-green');
-  }, []);
+  useTheme(['theme-green'], ['theme-white', 'theme-light-gray']);
 
   /**
    * Format phone numbers (not comprehensive)
    * '+' can precede country code, allow '-' and '()' interspersed
    */
-  const handleChange = useMemoizedFn(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      let txt = cleanPhoneOrEmail(e.target.value);
+  const handleChange = useMemoizedFn((e: React.ChangeEvent<HTMLInputElement>) => {
+    let txt = cleanPhoneOrEmail(e.target.value);
 
-      if (isEmail(txt)) {
-        !showSubmit && setShowSubmit(true);
-      } else if (txt.length > 4 && /^[0-9]+$/.test(txt)) {
-        txt = txt.slice(0, txt[0] === '1' ? 11 : 10);
-        if (isPhoneNumber(txt)) !showSubmit && setShowSubmit(true);
-        else showSubmit && setShowSubmit(false);
-        txt = formatPhoneNumber(txt);
-      } else {
-        showSubmit && setShowSubmit(false);
-      }
-      isInvalid && setIsInvalid(false);
-      setEmail(txt);
-    },
-  );
+    if (isEmail(txt)) {
+      !showSubmit && setShowSubmit(true);
+    } else if (txt.length > 4 && /^[0-9]+$/.test(txt)) {
+      txt = txt.slice(0, txt[0] === '1' ? 11 : 10);
+      if (isPhoneNumber(txt)) !showSubmit && setShowSubmit(true);
+      else showSubmit && setShowSubmit(false);
+      txt = formatPhoneNumber(txt);
+    } else {
+      showSubmit && setShowSubmit(false);
+    }
+    isInvalid && setIsInvalid(false);
+    setEmail(txt);
+  });
 
   const handleChangeCode = useMemoizedFn(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,33 +81,31 @@ const LoginPage: FC<LoginPageProps> = () => {
     },
   );
 
-  const handleEnter = useMemoizedFn(
-    async (e: React.MouseEvent<HTMLInputElement>) => {
-      e.preventDefault();
-      try {
-        if (!showSubmit) throw new Error('invalid');
-        await handleSubmit();
-      } catch (err) {
-        console.error(err.message);
-        setIsInvalid(true);
-      }
-    },
-  );
+  const handleSubmit = useMemoizedFn(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (stepNum === 1 && !showSubmit) throw new Error('invalid');
+      await handleLogin();
+    } catch (err) {
+      console.error(err.message);
+      setIsInvalid(true);
+    }
+  });
 
-  const handleSubmit = useMemoizedFn(async () => {
+  const handleLogin = useMemoizedFn(async () => {
     setIsSubmitting(true);
     try {
       if (stepNum === 0) {
         await requestLoginCode({
-          phoneOrEmail: cleanPhoneOrEmail(email),
+          identifier: cleanPhoneOrEmail(email),
         }).unwrap();
       } else {
-        if (!code) throw new Error('missing code');
+        if (!code?.length) throw new Error('missing code');
         await loginPhoneOrEmail({
-          phoneOrEmail: cleanPhoneOrEmail(email),
+          identifier: cleanPhoneOrEmail(email),
           code: code.replaceAll('-', ''),
         }).unwrap();
-        navigate('account');
+        navigate(location.state?.from?.pathname || '/account/activity');
       }
       setStepNum(stepNum + 1);
       isInvalid && setIsInvalid(false);
@@ -160,7 +153,7 @@ const LoginPage: FC<LoginPageProps> = () => {
             spellCheck='false'
             autoCapitalize='off'
             autoFocus
-            pattern='\d*'
+            // pattern='\d*'
             className='!rounded mb-[16px] text-center ember-text-field text-black'
             placeholder={steps[stepNum].placeholder}
             onChange={handleChangeCode}
@@ -174,34 +167,30 @@ const LoginPage: FC<LoginPageProps> = () => {
   return (
     <div className='!h-[100vh] application-cash'>
       <section className='!h-full layout-login flex-container pad'>
+        <div className='w-full pt-[40px]'>
+          <TestLogin setInput={setEmail} />
+        </div>
         <div className='login-container flex-container flex-v-center flex-fill'>
           <h1 className='step-title flex-static'>
-            {isInvalid
-              ? steps[stepNum].invalid(email)
-              : steps[stepNum].title(email)}
+            {isInvalid ? steps[stepNum].invalid(email) : steps[stepNum].title(email)}
           </h1>
-          <form className='w-full login-form'>
+          <form className='w-full login-form' onSubmit={handleSubmit}>
             {stepNum === 0 ? <PhoneOrEmailInput /> : <CodeInput />}
 
             <div
-              className={classnames(
-                'alias-submit fade-in immediate mt-[14px]',
-                {
-                  show: stepNum > 0 || showSubmit,
-                },
-              )}
+              className={classnames('alias-submit fade-in immediate mt-[14px]', {
+                show: stepNum > 0 || showSubmit,
+              })}
             >
               <div className='cta submit-button-component submit-button-with-spinner'>
-                <Button
-                  htmlType='submit'
-                  onSubmit={handleSubmit}
-                  onClick={stepNum > 0 ? handleSubmit : handleEnter}
-                  loading={isSubmitting}
+                <button
+                  type='submit'
+                  // loading={isSubmitting}
                   aria-label={steps[stepNum].buttonText}
                   className='button theme-button button--round theme-button'
                 >
                   {steps[stepNum].buttonText}
-                </Button>
+                </button>
                 <div className='spinner-container'></div>
               </div>
             </div>

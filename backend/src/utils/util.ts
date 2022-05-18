@@ -30,6 +30,7 @@ export const catchAsync = (fn) =>
     Promise.resolve(fn(req, res, next)).catch((err) => next(err));
   };
 
+// match uuid in route
 export const uuidRe = (param: string) => `:${param}([A-Fa-f0-9-]{36})`;
 
 export const idsToArray = (ids: { id: true }[], fn = Number): any[] =>
@@ -39,3 +40,9 @@ export const idsToHash = (
   ids: { id: string | number }[],
 ): { [_: string | number]: true } =>
   ids.reduce((acc, x) => ({ ...acc, [x.id]: true }), {});
+
+export const cleanQuery = (obj: object) =>
+  // eslint-disable-next-line
+  Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null),
+  );

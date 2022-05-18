@@ -8,7 +8,9 @@
     "semantic-release": "semantic-release",
     "start": "vite build --watch",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "deploy:build": "docker build -t registry.heroku.com/caashapp/caashapp:latest -f ./Dockerfile .",
+    "deploy": "npm run deploy:build && heroku container:push web --app caashapp && heroku container:release web --app caashapp"
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -24,17 +26,16 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "assets"
   ],
   "dependencies": {
-    "@2fd/ant-design-icons": "^2.5.0",
-    "@ant-design/icons": "^4.7.0",
     "@reduxjs/toolkit": "^1.8.1",
     "ahooks": "^3.3.10",
-    "antd": "^4.20.4",
     "class-validator": "^0.13.2",
     "classnames": "^2.3.1",
     "lodash-es": "^4.17.21",
+    "moment": "^2.29.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-redux": "^8.0.1",
@@ -44,6 +45,7 @@
   "devDependencies": {
     "@jest/types": "^28.1.0",
     "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@svgr/plugin-svgo": "^6.2.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.1.1",
@@ -67,7 +69,8 @@
     "ts-jest": "^28.0.2",
     "typescript": "^4.6.4",
     "vite": "^2.9.9",
-    "vite-dts": "^1.0.4"
+    "vite-dts": "^1.0.4",
+    "vite-plugin-react-svg": "https://gitpkg.now.sh/visualfanatic/vite-svg/packages/vite-plugin-react-svg?7e1571bf0636b2f341d1e66c23e8e264e64cc156"
   },
   "engines": {
     "node": ">=17"

@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "TransactionStatus" AS ENUM ('success', 'pending', 'failed');
+
+-- CreateEnum
 CREATE TYPE "PrivacySetting" AS ENUM ('all', 'none', 'contacts');
 
 -- CreateTable
@@ -7,13 +10,26 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cashTag" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "username" TEXT,
     "pinNumber" TEXT NOT NULL,
     "balance" DOUBLE PRECISION NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Transaction" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "value" DOUBLE PRECISION NOT NULL,
+    "note" TEXT,
+    "senderId" TEXT NOT NULL,
+    "receiverId" TEXT NOT NULL,
+    "status" "TransactionStatus" NOT NULL DEFAULT E'pending',
+    "refunded" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -94,6 +110,12 @@ CREATE UNIQUE INDEX "User_cashTag_key" ON "User"("cashTag");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Card_userId_key" ON "Card"("userId");
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "VerificationCode" ADD CONSTRAINT "VerificationCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

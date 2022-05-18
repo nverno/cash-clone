@@ -12,8 +12,7 @@ import { HttpException } from '@/exceptions';
 const debug = Debug('sms');
 
 // simplified test
-export const isSmsNumber = (input: string) =>
-  /^(1\d{10}|[02-9]\d{9})$/.test(input);
+export const isSmsNumber = (input: string) => /^(1\d{10}|[02-9]\d{9})$/.test(input);
 
 export const cleanSms = (input: string): string => {
   if (input[0] !== '1') input = '1' + input;

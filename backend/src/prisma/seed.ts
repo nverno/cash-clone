@@ -23,7 +23,7 @@ let rng = seedrandom();
 if (useSeededRNG) {
   rng = seedrandom(randomTimestampSeed);
   // setRandom(rng);
-  faker.seed(seedDate.getTime());
+  faker.seed(SEED);
 }
 
 const randomInt = (min: number, max: number) => {
@@ -67,33 +67,55 @@ const generateAccount = (n: number) => {
   }));
 };
 
+const generateUser = (user) => {
+  const name = user.name ?? faker.name.findName();
+  // const firstName = user.firstName ?? faker.name.firstName();
+  // const lastName = user.lastName ?? faker.name.lastName();
+  return {
+    name,
+    cashTag: user.cashTag ?? `${name.replace(' ', '')}`,
+    password: user.password ?? faker.internet.password(),
+    balance: user.balance ?? 1000 * Math.random(),
+    pinNumber:
+      user.pinNumber ?? faker.random.numeric(4, { allowLeadingZeros: true }),
+    email: {
+      create: user.email
+        ? { email: user.email }
+        : maptimes(randomInt(1, NUM_EMAIL), () => ({
+            email: faker.internet.email(),
+          })),
+    },
+    settings: user.settings ? undefined : {},
+    addresses: user.addresses ? undefined : { create: generateAddress(NUM_ADDR) },
+    phoneNumber: user.phoneNumber
+      ? undefined
+      : { create: generatePhoneNumber(NUM_PHONES) },
+    card: user.card ? undefined : { create: generateCard() },
+    accounts: user.accounts ? undefined : { create: generateAccount(NUM_ACCOUNT) },
+  };
+};
+
 const createUsers = async () => {
+  await prisma.user.upsert({
+    where: { cashTag: 'CashAdmin' },
+    update: {},
+    create: generateUser({
+      name: 'Cash Money',
+      cashTag: 'CashMoney',
+      email: 'cashappclone1@gmail.com',
+      // asdf
+      password: '$2b$10$mRT1ATkjY.tME6Lp1Itig.XANUQV3e3kWG8Uw7YMRiS9snv7jqZg2',
+      pinNumber: '1234',
+    }),
+  });
+
   return Promise.all(
     maptimes(NUM_USER, async () => {
-      const firstName = faker.name.firstName();
-      const lastName = faker.name.lastName();
-      const cashTag = `$${firstName}${lastName}`;
+      const user = generateUser({});
       return prisma.user.upsert({
-        where: { cashTag },
+        where: { cashTag: user.cashTag },
         update: {},
-        create: {
-          firstName,
-          lastName,
-          cashTag,
-          password: faker.internet.password(),
-          balance: 1000 * Math.random(),
-          pinNumber: faker.random.numeric(4, { allowLeadingZeros: true }),
-          email: {
-            create: maptimes(randomInt(1, NUM_EMAIL), () => ({
-              email: faker.internet.email(),
-            })),
-          },
-          settings: {},
-          addresses: { create: generateAddress(NUM_ADDR) },
-          phoneNumber: { create: generatePhoneNumber(NUM_PHONES) },
-          card: { create: generateCard() },
-          accounts: { create: generateAccount(NUM_ACCOUNT) },
-        },
+        create: user,
       });
     }),
   );

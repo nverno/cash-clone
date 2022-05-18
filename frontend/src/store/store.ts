@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { useAppSelector } from '.';
-import { authSlice, userSlice } from './features';
+import { authSlice, usersSlice } from './features';
 import { api } from './services';
 
 export { skipToken } from '@reduxjs/toolkit/query/react';
@@ -9,7 +9,7 @@ export { skipToken } from '@reduxjs/toolkit/query/react';
 export const store = configureStore({
   reducer: {
     auth: authSlice.reducer,
-    user: userSlice.reducer,
+    user: usersSlice.reducer,
     [api.reducerPath]: api.reducer,
   },
 

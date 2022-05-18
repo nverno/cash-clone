@@ -8,5 +8,4 @@ DebugModule.log = function (...args: any[]) {
   logger.debug(args);
 };
 DEBUG && DebugModule.enable(DEBUG);
-export const Debug = (prefix: string) =>
-  DebugModule(`${DEBUG_PREFIX}:${prefix}`);
+export const Debug = (prefix: string) => DebugModule(`${DEBUG_PREFIX}:${prefix}`);

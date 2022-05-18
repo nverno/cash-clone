@@ -7,7 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 model User {
@@ -17,8 +18,7 @@ model User {
   email       Email[]
   password    String
   loginCode   VerificationCode?
-  firstName   String
-  lastName    String
+  name        String
   username    String?
   pinNumber   String
   phoneNumber PhoneNumber[]
@@ -27,6 +27,27 @@ model User {
   accounts    BankAccount[]
   settings    Settings?
   addresses   MailingAddress[]
+  sent        Transaction[]     @relation("SentTransactions")
+  received    Transaction[]     @relation("ReceivedTransactions")
+}
+
+enum TransactionStatus {
+  success
+  pending
+  failed
+}
+
+model Transaction {
+  id         String            @id @default(uuid())
+  createdAt  DateTime          @default(now())
+  value      Float
+  note       String?
+  sender     User              @relation("SentTransactions", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  senderId   String
+  receiver   User              @relation("ReceivedTransactions", fields: [receiverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receiverId String
+  status     TransactionStatus @default(pending)
+  refunded   Boolean           @default(false)
 }
 
 model VerificationCode {

@@ -1,7 +1,12 @@
-@import 'antd/dist/antd.variable.min.css';
-@import './home.css';
+/* @import 'antd/dist/antd.variable.min.css'; */
+/* @import './home.css'; */
 
 @tailwind base;
+@layer base {
+  html {
+    line-height: normal;
+  }
+}
 @tailwind components;
 @tailwind utilities;
 
@@ -21,9 +26,9 @@
   color: #fff;
 }
 
-svg {
-  vertical-align: inherit;
-}
+/* svg { */
+/*   vertical-align: inherit; */
+/* } */
 
 dl,h3,menu,ol,p,pre,ul {
   margin:1em 0;
@@ -3216,15 +3221,15 @@ ol.reset>li,ul.reset>li {
   background-position:center center
 }
 .activity-header .icon-clear {
-  background-image:url(images/icon-x-round.svg)
+  background-image:url(../images/icon-x-round.svg)
 }
 .activity-header .icon-search {
-  background-image:url(images/icon-search.svg);
-  background-size:20px
+  background-image:url(../images/icon-search.svg);
+  background-size:20px;
 }
 .activity-header .icon-csv-download {
   border-left:1px solid #ebebeb;
-  background-image:url(images/icon-download.svg);
+  background-image:url(../images/icon-download.svg);
   transition:-webkit-transform .2s ease-out,opacity .2s ease-out,visibility .2s ease-out;
   transition:transform .2s ease-out,opacity .2s ease-out,visibility .2s ease-out
 }
@@ -3864,7 +3869,7 @@ a.button {
   height:16px;
   margin:1px 8px 0 0;
   vertical-align:top;
-  content:url(images/icon-alt-twitter.svg)
+  content:url(../images/icon-alt-twitter.svg)
 }
 .close-button {
   border-radius:4px;
@@ -3919,7 +3924,7 @@ button.button-confirm,button.button-decline {
   margin-left:-2px
 }
 .icon-sadface::before {
-  background:url(images/icon-sadface.svg) 50% no-repeat;
+  background:url(../images/icon-sadface.svg) 50% no-repeat;
   background-size:100%;
   content:""
 }
@@ -4118,7 +4123,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   height:100%
 }
 .no-svg .jewel {
-  background:url(images/jewel-55-white.png) no-repeat;
+  background:url(../images/jewel-55-white.png) no-repeat;
   background-size:100% auto
 }
 @media(min-width:480px) {
@@ -4165,7 +4170,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   border-radius:20%;
   font-size:15px;
   text-align:center;
-  background:url(images/icon-cash-app.svg) 50% 50% no-repeat
+  background:url(../images/icon-cash-app.svg) 50% 50% no-repeat
 }
 .customer-avatar {
   display:block;
@@ -4285,13 +4290,13 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   width:135px;
   height:135px;
   margin-bottom:20px;
-  content:url(images/icon-checkmark-thin-white.svg)
+  content:url(../images/icon-checkmark-thin-white.svg)
 }
 .status-title.icon-failed-thin:before {
   width:135px;
   height:135px;
   margin-bottom:20px;
-  content:url(images/icon-failed-thin-white.svg)
+  content:url(../images/icon-failed-thin-white.svg)
 }
 @media(min-width:480px) {
   .layout-status-step .instructions {
@@ -4601,11 +4606,11 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   background-size:112px 50px
 }
 .mobile-links .link.android {
-  background-image:url(images/icon-android-button.svg);
+  background-image:url(../images/icon-android-button.svg);
   margin-right:10px
 }
 .mobile-links .link.iphone {
-  background-image:url(images/icon-apple-button.svg)
+  background-image:url(../images/icon-apple-button.svg)
 }
 .account-navigation-bar {
   height:70px;
@@ -5272,27 +5277,27 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   margin-bottom:-10px
 }
 .banking-digits-example .example-graphic.routing-number {
-  background-image:url(images/bank-example-routing.svg);
+  background-image:url(../images/bank-example-routing.svg);
   width:90px
 }
 .banking-digits-example .example-graphic.account-number {
-  background-image:url(images/bank-example-account.svg);
+  background-image:url(../images/bank-example-account.svg);
   width:99px
 }
 .banking-digits-example .example-graphic.bsb-number {
-  background-image:url(images/bank-example-bsb.svg);
+  background-image:url(../images/bank-example-bsb.svg);
   width:62px
 }
 .banking-digits-example .example-graphic.transit-number {
-  background-image:url(images/bank-example-transit.svg);
+  background-image:url(../images/bank-example-transit.svg);
   width:49px
 }
 .banking-digits-example .example-graphic.institution-number {
-  background-image:url(images/bank-example-institution.svg);
+  background-image:url(../images/bank-example-institution.svg);
   width:35px
 }
 .banking-digits-example .example-graphic.sort-code {
-  background-image:url(images/bank-example-sort-code.svg);
+  background-image:url(../images/bank-example-sort-code.svg);
   width:52px
 }
 @media(min-width:480px) {
@@ -5326,22 +5331,22 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   border-color:rgba(255,255,255,.4)
 }
 .theme-green .banking-digits-example .example-graphic.routing-number {
-  background-image:url(images/bank-example-routing-white.svg)
+  background-image:url(../images/bank-example-routing-white.svg)
 }
 .theme-green .banking-digits-example .example-graphic.account-number {
-  background-image:url(images/bank-example-account-white.svg)
+  background-image:url(../images/bank-example-account-white.svg)
 }
 .theme-green .banking-digits-example .example-graphic.bsb-number {
-  background-image:url(images/bank-example-bsb-white.svg)
+  background-image:url(../images/bank-example-bsb-white.svg)
 }
 .theme-green .banking-digits-example .example-graphic.transit-number {
-  background-image:url(images/bank-example-transit-white.svg)
+  background-image:url(../images/bank-example-transit-white.svg)
 }
 .theme-green .banking-digits-example .example-graphic.institution-number {
-  background-image:url(images/bank-example-institution-white.svg)
+  background-image:url(../images/bank-example-institution-white.svg)
 }
 .theme-green .banking-digits-example .example-graphic.sort-code {
-  background-image:url(images/bank-example-sort-code-white.svg)
+  background-image:url(../images/bank-example-sort-code-white.svg)
 }
 .passcode-inputs {
   position:relative;
@@ -6338,7 +6343,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
 }
 .payment-status .icon.alt-twitter a {
   position:absolute;
-  background:url(images/icon-alt-twitter.svg) 50% 50% no-repeat;
+  background:url(../images/icon-alt-twitter.svg) 50% 50% no-repeat;
   background-size:25px 25px
 }
 .payment-status .icon.alt-facebook {
@@ -6346,7 +6351,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
 }
 .payment-status .icon.alt-facebook a {
   position:absolute;
-  background:url(images/icon-alt-facebook.svg) 50% 50% no-repeat;
+  background:url(../images/icon-alt-facebook.svg) 50% 50% no-repeat;
   background-size:25px 25px
 }
 .payment-status .share-icons {
@@ -6820,7 +6825,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
 }
 .customer-list-item .selection-indicator.is-selected {
   background-color:#0bb634;
-  background-image:url(images/icon-checkmark-white.svg);
+  background-image:url(../images/icon-checkmark-white.svg);
   background-position:50% 50%;
   background-repeat:no-repeat;
   border-color:#0bb634
@@ -6855,7 +6860,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   height:20px;
   margin-left:5px;
   margin-top:-10px;
-  background:url(images/delete.svg) 50% 50% no-repeat
+  background:url(../images/delete.svg) 50% 50% no-repeat
 }
 .list-picker {
   border:1px solid #ccc;
@@ -7272,7 +7277,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   margin-right:-30px;
   width:20px;
   height:20px;
-  background:url(images/icon-check-green.svg) 50% no-repeat;
+  background:url(../images/icon-check-green.svg) 50% no-repeat;
   opacity:0;
   transition:opacity .1s ease-out
 }
@@ -7461,7 +7466,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
 .settings-instrument-item .icon-alert {
   width:18px;
   height:18px;
-  background:url(images/icon-actionable.svg) no-repeat;
+  background:url(../images/icon-actionable.svg) no-repeat;
   display:inline-block
 }
 .prefixed-note-component.field {
@@ -10066,7 +10071,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
   color:#000
 }
 .cookie-banner .sqc-close-button {
-  background:url(images/icon-close-button.svg) 50% 50% no-repeat;
+  background:url(../images/icon-close-button.svg) 50% 50% no-repeat;
   background-size:auto auto;
   color:transparent
 }
@@ -10438,7 +10443,7 @@ input[type=email][disabled],input[type=password][disabled],input[type=tel][disab
 .country-button.selected .status {
   height:26px;
   width:26px;
-  background:url(images/icon-check-green.svg) 50% 50% no-repeat;
+  background:url(../images/icon-check-green.svg) 50% 50% no-repeat;
   background-size:contain
 }
 .country-button .flag {

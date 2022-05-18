@@ -1,23 +1,40 @@
+import { debounce, isEmpty } from 'lodash-es';
 import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import { DefaultProps } from '../../App';
+import { useSetNameMutation } from '../../store';
 import {
   formatBalance,
+  formatCashTag,
   formatInitial,
   formatName,
   formatUserPhoneNumber,
 } from '../../utils';
 
-export interface SettingsProps extends DefaultProps {}
+export interface SettingsPageProps extends DefaultProps {}
 
-export const Settings: FC<SettingsProps> = (props) => {
+export const SettingsPage: FC<SettingsPageProps> = (props) => {
   const { user } = props;
   if (!user) return null;
-  const [displayName, setDisplayName] = React.useState(
-    user?.username ?? user.firstName + ' ' + user.lastName,
+  const [setName] = useSetNameMutation();
+  const [displayName, setDisplayName] = React.useState(user?.username ?? user.name);
+
+  const updateName = React.useCallback(
+    debounce(
+      (name: string) => {
+        setName({ id: user.id, name: name.trim() });
+      },
+      500,
+      { leading: false, trailing: true },
+    ),
+    [],
   );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayName(e.target.value);
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    if (isEmpty(name)) return;
+    setDisplayName(name);
+    updateName(name);
   };
 
   return (
@@ -33,7 +50,7 @@ export const Settings: FC<SettingsProps> = (props) => {
             <span className='name '>{formatName(user)}</span>
           </h3>
           <h3 className='cashtag'>
-            <a href={user.cashTag}>{user.cashTag}</a>
+            <Link to={`/${formatCashTag(user)}`}>{formatCashTag(user)}</Link>
           </h3>
         </div>
 
@@ -80,21 +97,21 @@ export const Settings: FC<SettingsProps> = (props) => {
           <h3 className='account-module-header'>$Cashtag</h3>
           <div className='account-module-container cashtag'>
             <div className='settings-display-field cashtag has-edit-action'>
-              {user.cashTag}
+              {formatCashTag(user)}
             </div>
             <div className='settings-display-field toggle-field'>
               <div className='toggle-switch checked'></div>
               <h4 className='title'>Cash.app</h4>
               <p className='description'>
                 Allow others to pay me at{' '}
-                <a
+                <Link
                   style={{ color: '#00d64f' }}
-                  href={`http://cash.app/{user.cashTag}`}
+                  to={`/${formatCashTag(user)}`}
                   target='_blank'
                   rel='noopener noreferrer'
                 >
-                  cash.app/{user.cashTag}
-                </a>
+                  cash.app/{formatCashTag(user)}
+                </Link>
               </p>
             </div>
           </div>
@@ -112,9 +129,7 @@ export const Settings: FC<SettingsProps> = (props) => {
               <div className='settings-display-field toggle-field'>
                 <div className='toggle-switch checked'></div>
                 <h4 className='title'>Incoming Requests</h4>
-                <p className='description'>
-                  Allow others to request money from me
-                </p>
+                <p className='description'>Allow others to request money from me</p>
               </div>
               <div className='deposit-options-list settings-submodule'>
                 <div className='preference-list-item settings-display-field'>
@@ -145,8 +160,8 @@ export const Settings: FC<SettingsProps> = (props) => {
               Add Phone or Email
             </div>
             <div className='settings-display-field download-your-info'>
-              <a
-                href='/documents/personal-data'
+              <Link
+                to='/documents/personal-data'
                 target='_blank'
                 rel='noopener noreferrer'
                 title='Download a copy of your Cash App data'
@@ -154,7 +169,7 @@ export const Settings: FC<SettingsProps> = (props) => {
                 className='theme-link-color'
               >
                 Download Your Info
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -214,4 +229,4 @@ export const Settings: FC<SettingsProps> = (props) => {
   );
 };
 
-export default Settings;
+export default SettingsPage;

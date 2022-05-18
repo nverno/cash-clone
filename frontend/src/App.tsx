@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { FC } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux'; // eslint-disable-line
 import '../styles/globals.css';
 import { store, User } from './store';
@@ -16,11 +16,26 @@ export interface DefaultProps {
   user: User;
 }
 
+const DebugRouter = ({ children }: { children: any }) => {
+  const location = useLocation();
+  if (process.env.NODE_ENV === 'development') {
+    console.log(
+      `Route: ${location.pathname}${location.search}, State: ${JSON.stringify(
+        location.state,
+      )}`,
+    );
+  }
+
+  return children;
+};
+
 const App: FC<AppProps> = () => {
   return (
-    <BrowserRouter basename={'/'}>
+    <BrowserRouter basename='/cash-clone/'>
       <Provider store={store}>
-        <Container />
+        <DebugRouter>
+          <Container />
+        </DebugRouter>
       </Provider>
     </BrowserRouter>
   );
