@@ -185,7 +185,7 @@ const createConfig = (options = {}) => {
               setup(build) {
                 build.onLoad({ filter: /src\/.+\.js$/ }, async (args) => ({
                   loader: 'tsx',
-                  contents: fs.readFileSync(args._path, 'utf8'),
+                  contents: fs.readFileSync(args.path, 'utf8'),
                 }));
               },
             },
