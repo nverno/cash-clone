@@ -3,7 +3,7 @@ import { User } from '../../store';
 import { formatInitial } from '../../utils';
 
 export interface UserAvatarProps extends React.HTMLProps<HTMLSpanElement> {
-  user: User;
+  user: Pick<User, 'name'>;
   fontSize?: number;
   backgroundColor?: string;
 }

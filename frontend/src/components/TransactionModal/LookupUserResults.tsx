@@ -6,7 +6,7 @@ import { formatCashTag, formatName } from '../../utils';
 export interface LookupUserResultsProps {
   results?: User[];
   addUser;
-  selectedUsers?: { [id: string]: User };
+  selectedUsers?: { [id: string]: Partial<User> };
 }
 
 const LookupUserResults: FC<LookupUserResultsProps> = (props) => {
