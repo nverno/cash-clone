@@ -11,7 +11,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon",
-    "dev:rebuild": "docker-compose down --volumes && docker-compose up --build -d && npm run prisma:generate && npm run prisma:migrate && npm run seed && docker-compose up server",
+    "dev:rebuild": "docker-compose down --volumes && docker-compose up --build -d && npm run db:generate && npm run db:migrate && npm run db:seed && docker-compose up server",
     "build": "tsc && tsc-alias",
     "build:swc": "swc src -d dist --source-maps --copy-files",
     "deploy": "source scripts/helpers.sh; deploy",
