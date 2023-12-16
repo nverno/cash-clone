@@ -13,7 +13,7 @@ export interface LoginPageProps {}
 const steps = [
   {
     title: () => <>Sign in to Cash App</>,
-    invalid: () => <>Invalid email address or SMS number</>,
+    invalid: () => <>Weird</>,
     placeholder: 'Email or Mobile Number',
     buttonText: 'Request Sign In Code',
   },
