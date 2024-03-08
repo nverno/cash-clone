@@ -17,8 +17,8 @@ describe('Testing Users', () => {
       users.findMany = jest.fn().mockReturnValue([
         {
           id: 1,
-          email: 'a@email.com',
-          password: await bcrypt.hash('q1w2e3r4!', 10),
+          email: 'niggabojohnson@gmail.com',
+          password: await bcrypt.hash('thisnigga6969', 10),
         },
         {
           id: 2,
@@ -46,8 +46,8 @@ describe('Testing Users', () => {
 
       users.findUnique = jest.fn().mockReturnValue({
         id: 1,
-        email: 'a@email.com',
-        password: await bcrypt.hash('q1w2e3r4!', 10),
+        email: 'niggabojohnson@gmail.com',
+        password: await bcrypt.hash('thisnigga6969', 10),
       });
 
       const app = new App([usersRoute]);
